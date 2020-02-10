@@ -40,17 +40,32 @@ def split_data(data, n_steps, reshape):
     for d in np.nditer(data):
 
         if step == n_steps + 1:
-            A = np.append(A, d)
+            B = np.append(B, d)
             step = 0
         else:
-            B = np.append(B, d)
+            A = np.append(A, d)
         step += 1
     
     if reshape:
-        A = X[:-1]
+        A = A[:-1]
         A = np.reshape(A, (-1, n_steps))
 
     return A, B
+
+# ratio is train first and then test  
+def split_train_test_data(data, ratio):
+    
+    A = np.array([])
+    B = np.array([])
+
+    split_index = int( ratio[0] / (ratio[0] + ratio[1]) * len(data) )
+    # print(split_index)
+
+    A = np.append(A, data[:split_index])
+    B = np.append(B, data[split_index:])
+
+    return A, B
+
 
 def time_series_plot():
     d_types = ["TIME","MID","MIC","IMB","SPR"]
@@ -60,8 +75,9 @@ def time_series_plot():
         data[d] = read_data("lob_data.csv", d)
 
     # for i in range(1, len(d_types)):
-    for i in range(2, 3):
-        plt.plot( data["TIME"], data[d_types[i]], label=d_types[i])
+    #     plt.plot(data["TIME"], data[d_types[i]], label=d_types[i])
+
+    plt.plot(data["TIME"], data[d_types[4]], label=d_types[4])
     
     plt.legend()
     plt.show()
