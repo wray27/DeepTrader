@@ -1,8 +1,6 @@
 import csv
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
-
 # read the data from CSV file  
 # d_type 
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
@@ -48,7 +46,7 @@ def split_data(data, n_steps, reshape):
     
     if reshape:
         A = A[:-1]
-        A = np.reshape(A, (-1, n_steps))
+        A = np.reshape(A, (-1, n_steps,1))
 
     return A, B
 
@@ -67,20 +65,6 @@ def split_train_test_data(data, ratio):
     return A, B
 
 
-def time_series_plot():
-    d_types = ["TIME","MID","MIC","IMB","SPR"]
-    data = {}
-    for d in d_types:
-        data[d] = np.array([])
-        data[d] = read_data("lob_data.csv", d)
-
-    # for i in range(1, len(d_types)):
-    #     plt.plot(data["TIME"], data[d_types[i]], label=d_types[i])
-
-    plt.plot(data["TIME"], data[d_types[4]], label=d_types[4])
-    
-    plt.legend()
-    plt.show()
 
 if __name__ == "__main__":
-    time_series_plot()
+    pass
