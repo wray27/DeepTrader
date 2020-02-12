@@ -29,26 +29,10 @@ class Vanilla_LSTM():
         for i in range(len(X)):
             input = X[i].reshape((1,self.steps,1))
             yhat = self.model.predict(input, verbose=1)
-            print(y[i], yhat[0][0], mean(input[0]))
+            print(y[i], yhat[0][0], np.mean(input[0]))
         # model.fit(X, y, epochs=200, verbose=1)
-    def save_model(self, filename):
-        checkpoint_dir = os.path.dirname(checkpoint_path)
-        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=filename,
-                                                         save_weights_only=True,
-                                                         verbose=1)
+   
         
-
-def mean(data):
-    
-    total = 0
-
-    for i in data:
-        total += i 
-
-    mean = total / len(data)
-    
-    return mean[0]
-
 if __name__ == "__main__":
     # numpy.set_printoptions(threshold=sys.maxsize)
     time = data_handler.read_data("lob_datatrial0001.csv","TIME")
