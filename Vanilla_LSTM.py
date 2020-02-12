@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     prices = data_handler.read_data("lob_datatrial0010.csv", "MIC")
 
-    model.forecast(time, prices, 480)
+ 
 
 
     

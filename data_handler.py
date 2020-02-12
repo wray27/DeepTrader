@@ -81,9 +81,9 @@ def split_train_test_data(data, ratio):
     # print(split_index)
 
     A = np.append(A, data[:split_index])
-    train_mean = np.mean(A)
-    train_std = np.std(A)
-    A = (A - train_mean) / train_std
+    # train_mean = np.mean(A)
+    # train_std = np.std(A)
+    # A = (A - train_mean) / train_std
 
     B = np.append(B, data[split_index:])
 
