@@ -26,6 +26,27 @@ def read_data(filename, d_type):
     return data
 
 
+def read_all_data(filename):
+    data = {}
+
+    with open(filename, "r") as f:
+        f_data = csv.reader(f)
+        data["TIME"] = np.array([])
+        data["MID"] = np.array([])
+        data["MIC"] = np.array([])
+        data["IMB"] = np.array([])
+        data["SPR"] = np.array([])
+
+        for row in f_data:
+            data["TIME"] = np.append(data["TIME"],float(row[0]))
+            data["MID"] = np.append(data["MID"],float(row[1]))
+            data["MIC"] = np.append(data["MIC"],float(row[2]))
+            data["IMB"] = np.append(data["IMB"],float(row[3]))
+            data["SPR"] = np.append(data["SPR"],float(row[4]))
+ 
+    return data
+
+
 # splitting data into input and output signal
 # n_steps is the number of steps taken until a split occurs will have to formalize this with time steps
 # for now is just for every n_steps, we have a y
