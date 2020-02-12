@@ -12,7 +12,6 @@ class NeuralNetwork():
         self.input_shape = input_shape
         self.model = Sequential()
         self.steps = input_shape[1]
-        
         self.model.add(LSTM(hidden_layers, activation='relu', input_shape=input_shape))
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mae')
