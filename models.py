@@ -12,7 +12,17 @@ import NeuralNetwork
 
 # Univariate LSTM 
 class Vanilla_LSTM(NeuralNetwork.NeuralNetwork):
-  
+    def __init__(self, input_shape):
+        # inputs: A 3D tensor with shape[batch, timesteps, feature].
+
+        self.input_shape = input_shape
+        self.model = Sequential()
+        self.steps = input_shape[0]
+        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
+        self.model.add(Dense(1))
+        self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mae')
+        self.n_features = self.input_shape[1]
+
     def test(self, X, y, verbose):
         for i in range(len(X)):
         input = X[i].reshape((1,self.steps,1))
@@ -24,8 +34,8 @@ if __name__ == '__main__':
     steps = 59
     vanilla = Vanilla_LSTM((steps,1))
     reshape = True
-    time = data_handler.read_data("./Data/lob_datatrial0001.csv", "TIME")
-    prices = data_handler.read_data("./Data/lob_datatrial0001.csv", "MIC")
+    time = data_handler.read_data("./Data/lob_data.csv", "TIME")
+    prices = data_handler.read_data("./Data/lob_data.csv", "MIC")
     X, y = data_handler.split_data(prices, steps, reshape)
     
     split_ratio = [9,1]
