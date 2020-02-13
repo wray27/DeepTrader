@@ -16,10 +16,12 @@ def time_series_plot():
     plt.show()
 
 
-def forecast_plot(time, actual, pred_times, preds):
+def accuracy_plot(actual, preds, baseline):
+    time = np.arange(len(actual))
     plt.plot(time, actual,  label="actual", color='blue')
-    plt.plot(pred_times, preds, label="prediction", color='red')
-
+    plt.plot(time, preds,  label="preds", color='red')
+    plt.plot(time, baseline,  label="mean", color='green')
+    
     plt.legend()
     plt.show()
 

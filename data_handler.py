@@ -50,7 +50,7 @@ def read_all_data(filename):
 # splitting data into input and output signal
 # n_steps is the number of steps taken until a split occurs will have to formalize this with time steps
 # for now is just for every n_steps, we have a y
-def split_data(data, n_steps, reshape):
+def split_data(data, n_steps):
 
     A = np.array([])
     B = np.array([])
@@ -65,10 +65,44 @@ def split_data(data, n_steps, reshape):
             A = np.append(A, d)
         step += 1
     
-    if reshape:
-        A = A[:-1]
-        A = np.reshape(A, (-1, n_steps,1))
+    
+    A = A[:-1]
+    A = np.reshape(A, (-1, n_steps,1))
 
+    return A, B
+def multi_split_data(data, x_steps, y_steps):
+    
+    A = np.array([])
+    B = np.array([])
+
+    step = 0
+    add_A = True
+    for d in np.nditer(data):
+
+        if add_A:
+            
+            A = np.append(A, d)
+            step += 1
+            
+            if step == x_steps: 
+                add_A = False
+                step = 0
+        
+        else:
+           
+            B = np.append(B, d)
+            step += 1
+
+            if step == y_steps:
+                add_A = True
+                step = 0
+
+    
+   
+    A = A[:-1]
+    A = np.reshape(A, (-1, x_steps,1))
+
+    B = np.reshape(B, (-1, y_steps, 1))
     return A, B
 
 # ratio is train first and then test  
