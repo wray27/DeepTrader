@@ -36,13 +36,19 @@ def read_all_data(filename):
         data["MIC"] = np.array([])
         data["IMB"] = np.array([])
         data["SPR"] = np.array([])
+        data["BID"] = np.array([])
+        data["ASK"] = np.array([])
+        data["TRA"] = np.array([])
 
         for row in f_data:
             data["TIME"] = np.append(data["TIME"],float(row[0]))
             data["MID"] = np.append(data["MID"],float(row[1]))
             data["MIC"] = np.append(data["MIC"],float(row[2]))
             data["IMB"] = np.append(data["IMB"],float(row[3]))
-            data["SPR"] = np.append(data["SPR"],float(row[4]))
+            data["SPR"] = np.append(data["SPR"], float(row[4]))
+            data["BID"] = np.append(data["BID"], float(row[4]))
+            data["ASK"] = np.append(data["ASK"], float(row[4]))
+            data["TRA"] = np.append(data["TRA"], float(row[4]))
  
     return data
 
@@ -68,6 +74,9 @@ def split_data(data, n_steps):
     
     A = A[:-1]
     A = np.reshape(A, (-1, n_steps,1))
+
+    A = (A - np.mean(A)) / np.max(A)
+    B = (B - np.mean(B)) / np.max(B)
 
     return A, B
 def multi_split_data(data, x_steps, y_steps):
@@ -120,7 +129,8 @@ def split_train_test_data(data, ratio):
     # A = (A - train_mean) / train_std
 
     B = np.append(B, data[split_index:])
-
+    
+    print("shape of normalized data: ",A.shape)
     return A, B
 
 

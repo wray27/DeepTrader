@@ -35,7 +35,7 @@ class Vanilla_LSTM(NeuralNetwork.NeuralNetwork):
             baseline = np.append(baseline, np.mean(input[0]))
             print(y[i], preds[i], baseline[i])
 
-        print(len(y), len(preds), len(baseline))
+        # print(len(y), len(preds), len(baseline))
         data_visualizer.accuracy_plot(y, preds, baseline)
         
     def run_all(self):
@@ -53,6 +53,19 @@ class Vanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.train(train_X, train_y, 200, verbose = 1)
         self.test(test_X, test_y, verbose = 1)
         self.save()
+
+    def run_all2(self):
+        
+        for i in range(9):
+            print("epoch " + str(i+1) + " out of 9")
+            prices = data_handler.read_data("./Data/lob_datatrial000" + str(i+1) + ".csv", "MIC")
+            X, y = data_handler.split_data(prices, self.steps)
+            self.train(X, y, 100, 0)
+        
+        time = data_handler.read_data("./Data/lob_data.csv", "TIME")
+        prices = data_handler.read_data("./Data/lob_data.csv", "MIC")
+        X, y = data_handler.split_data(prices, self.steps)
+        self.test(X, y, verbose=1)
 
 
 class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
@@ -89,9 +102,9 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
         data_visualizer.accuracy_plot(actual, preds, baseline)
 
     def run_all(self):
-
-        time = data_handler.read_data("./Data/lob_data.csv", "TIME")
-        prices = data_handler.read_data("./Data/lob_data.csv", "MIC")
+    
+        time = data_handler.read_data("./Data/lob_datatrial0001.csv", "TIME")
+        prices = data_handler.read_data("./Data/lob_datatrial0001.csv", "MIC")
         X, y = data_handler.multi_split_data(prices, self.steps, self.out_steps)
 
         split_ratio = [9, 1]
@@ -106,19 +119,21 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.save()
 
 
+class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
+
 
 if __name__ == '__main__':
     
     ## single step vanilla LSTM
-    # steps = 9
-    # vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
-    # vanilla.run_all()
+    steps = 9
+    vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
+    vanilla.run_all2()
 
     # multiple step vanilla LSTM
-    in_steps = 12
-    out_steps = 36
-    mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
-    mul.run_all()
+    # in_steps = 12
+    # out_steps = 36
+    # mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
+    # mul.run_all()
 
 
 
