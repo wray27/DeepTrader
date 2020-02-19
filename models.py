@@ -120,20 +120,51 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
 
 
 class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
+    def __init__(self, input_shape, filename):
+        self.input_shape = input_shape
+        self.model = Sequential()
+        self.steps = input_shape[0]
+      
+        self.model.add(LSTM(8,  return_sequences=True,
+                            activation='relu', input_shape=input_shape))
+        self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
+        self.model.add(LSTM(6, activation='relu'))
+        self.model.add(Dense(1))
+        self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mse')
+        self.n_features = self.input_shape[1]
+        self.filename = filename
+    
+    def run_all(self):
+        train, labels = data_handler.read_data_from_multiple_files()
+        print(train.shape, labels.shape)
+        
 
-
+       
+        self.train(train, labels, 100, verbose=1)
+        # self.test(test_X, test_y, verbose=1)
+        self.save()
 if __name__ == '__main__':
     
     ## single step vanilla LSTM
-    steps = 9
-    vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
-    vanilla.run_all2()
+    # steps = 9
+    # vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
+    # vanilla.run_all2()
 
     # multiple step vanilla LSTM
     # in_steps = 12
     # out_steps = 36
     # mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
     # mul.run_all()
+
+    # multivariate LSTM
+    no_features = 7
+    no_steps = 1
+
+    mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
+   
+
+    mv.run_all()
+
 
 
 

@@ -1,6 +1,7 @@
 import csv
 import sys
 import numpy as np
+from sklearn.preprocessing import normalize
 # read the data from CSV file  
 # d_type 
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
@@ -20,11 +21,41 @@ def read_data(filename, d_type):
                 data = np.append(data, float(row[3]))
             elif d_type == "SPR":
                     data = np.append(data, float(row[4]))
+            
             else:
                 data = np.append(data, float(row[0]))
 
     return data
 
+
+def read_data2(filename, d_type):
+    data = np.array([])
+
+    with open(filename, "r") as f:
+        f_data = csv.reader(f)
+
+        for row in f_data:
+            # print(row)
+            if d_type == "MID":
+                data = np.append(data, float(row[1]))
+            elif d_type == "MIC":
+                data = np.append(data, float(row[2]))
+            elif d_type == "IMB":
+                data = np.append(data, float(row[3]))
+            elif d_type == "SPR":
+                data = np.append(data, float(row[4]))
+            elif d_type == "BID":
+                data = np.append(data, float(row[5]))
+            elif d_type == "ASK":
+                data = np.append(data, float(row[6]))
+            elif d_type == "TAR":
+                data = np.append(data, float(row[7]))
+            else:
+                data = np.append(data, float(row[0]))
+
+    data = (data - np.mean(data)) / np.max(data)
+        
+    return data
 
 def read_all_data(filename):
     data = {}
@@ -38,7 +69,7 @@ def read_all_data(filename):
         data["SPR"] = np.array([])
         data["BID"] = np.array([])
         data["ASK"] = np.array([])
-        data["TRA"] = np.array([])
+        # data["TAR"] = np.array([])
 
         for row in f_data:
             data["TIME"] = np.append(data["TIME"],float(row[0]))
@@ -46,11 +77,44 @@ def read_all_data(filename):
             data["MIC"] = np.append(data["MIC"],float(row[2]))
             data["IMB"] = np.append(data["IMB"],float(row[3]))
             data["SPR"] = np.append(data["SPR"], float(row[4]))
-            data["BID"] = np.append(data["BID"], float(row[4]))
-            data["ASK"] = np.append(data["ASK"], float(row[4]))
-            data["TRA"] = np.append(data["TRA"], float(row[4]))
+            data["BID"] = np.append(data["BID"], float(row[5]))
+            data["ASK"] = np.append(data["ASK"], float(row[6]))
+            # data["TAR"] = np.append(data["TAR"], float(row[7]))
+
+        for dataset in data:
+            if dataset != "TIME":
+                # data[dataset] = (data[dataset] - np.mean(data[dataset])) / np.max(data[dataset])
+                data[dataset] = np.reshape(data[dataset],(-1,1))
+                data[dataset] = normalize(data[dataset])
+                data[dataset] = np.reshape(data[dataset], (-1))
  
     return data
+
+
+def read_data_from_multiple_files():
+    
+    
+    arr =[]
+    arr2 = []
+    for i in range(9):
+        filename = "./Data/trial000" + str(i+1) + '.csv'
+        temp = np.array([])
+        data = read_all_data(filename)
+        labels = read_data2(filename, "TAR")
+        temp = np.vstack([data[d] for d in data])
+        arr.append(temp)
+        arr2.append(labels)
+        # print(temp.shape)
+
+    train = np.hstack([arr[i] for i in range(len(arr))])
+    labels = np.hstack([arr2[i] for i in range(len(arr2))])
+    
+    # print(train.shape, labels.shape)
+    train = np.reshape(train, (-1, 1, 7))
+
+    labels = np.reshape(labels, (-1, 1))
+
+    return train, labels
 
 
 # splitting data into input and output signal
