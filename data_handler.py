@@ -53,7 +53,9 @@ def read_data2(filename, d_type):
             else:
                 data = np.append(data, float(row[0]))
 
-    data = (data - np.mean(data)) / np.max(data)
+    data = np.reshape(data, (-1, 1))
+    data = normalize(data)
+    data = np.reshape(data, (-1))
         
     return data
 
@@ -82,7 +84,7 @@ def read_all_data(filename):
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
 
         for dataset in data:
-            if dataset != "TIME":
+            if dataset != "TIME" or dataset != "IMB":
                 # data[dataset] = (data[dataset] - np.mean(data[dataset])) / np.max(data[dataset])
                 data[dataset] = np.reshape(data[dataset],(-1,1))
                 data[dataset] = normalize(data[dataset])

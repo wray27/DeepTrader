@@ -76,9 +76,9 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.model = Sequential()
         self.steps = input_shape[0]
         self.out_steps = out_steps
-        self.model.add(LSTM(8, return_sequences=True, activation='relu', input_shape=input_shape))
-        self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
-        self.model.add(LSTM(6, activation='relu'))
+        self.model.add(LSTM(8,  activation='relu', input_shape=input_shape))
+        # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
+        # self.model.add(LSTM(6, activation='relu'))
         self.model.add(Dense(self.out_steps))
         self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mae')
         self.n_features = self.input_shape[1]
@@ -125,10 +125,10 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         self.model = Sequential()
         self.steps = input_shape[0]
       
-        self.model.add(LSTM(8,  return_sequences=True,
+        self.model.add(LSTM(8, 
                             activation='relu', input_shape=input_shape))
-        self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
-        self.model.add(LSTM(6, activation='relu'))
+        # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
+        # self.model.add(LSTM(6, activation='relu'))
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mse')
         self.n_features = self.input_shape[1]
