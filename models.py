@@ -76,7 +76,7 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.model = Sequential()
         self.steps = input_shape[0]
         self.out_steps = out_steps
-        self.model.add(LSTM(8,  activation='relu', input_shape=input_shape))
+        self.model.add(LSTM(24,  activation='relu', input_shape=input_shape))
         # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
         # self.model.add(LSTM(6, activation='relu'))
         self.model.add(Dense(self.out_steps))
