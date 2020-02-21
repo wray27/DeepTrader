@@ -124,13 +124,14 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         self.input_shape = input_shape
         self.model = Sequential()
         self.steps = input_shape[0]
+        optimizer = tf.keras.optimizers.Adam(learning_rate=1e-6)
      
         self.model.add(LSTM(8, 
                             activation='relu', input_shape=input_shape))
         # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
         # self.model.add(LSTM(6, activation='relu'))
         self.model.add(Dense(1))
-        self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mse')
+        self.model.compile(optimizer=optimizer, metrics=['accuracy'], loss='mse')
         self.n_features = self.input_shape[1]
         self.filename = filename
     
@@ -147,12 +148,12 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
 
         test_y = np.reshape(test_y, (-1, 1))
         # print(test_y)
-        self.train(train, labels, epochs =1)
+        self.train(train, labels, epochs =3)
         self.test(test_X, test_y)
         # # yhat = self.model.predict(input, verbose=verbose)
         # # print(y[i], yhat[0][0])
         # # self.test(test_X, test_y, verbose=1)
-        # self.save()
+        self.save()
 if __name__ == '__main__':
     
     ## single step vanilla LSTM
