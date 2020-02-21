@@ -124,7 +124,7 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         self.input_shape = input_shape
         self.model = Sequential()
         self.steps = input_shape[0]
-      
+     
         self.model.add(LSTM(8, 
                             activation='relu', input_shape=input_shape))
         # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
@@ -136,13 +136,23 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
     
     def run_all(self):
         train, labels = data_handler.read_data_from_multiple_files()
-        print(train.shape, labels.shape)
+        # print(train.shape, labels.shape)
+        test_X = data_handler.read_all_data("./Data/trial0010.csv")
+        test_y = data_handler.read_data2("./Data/trial0010.csv","TAR")
         
+      
 
+        test_X = np.reshape(test_X,(-1, self.steps, 7))
        
-        self.train(train, labels, 100, verbose=1)
-        # self.test(test_X, test_y, verbose=1)
-        self.save()
+
+        test_y = np.reshape(test_y, (-1, 1))
+        # print(test_y)
+        self.train(train, labels, epochs =1)
+        self.test(test_X, test_y)
+        # # yhat = self.model.predict(input, verbose=verbose)
+        # # print(y[i], yhat[0][0])
+        # # self.test(test_X, test_y, verbose=1)
+        # self.save()
 if __name__ == '__main__':
     
     ## single step vanilla LSTM

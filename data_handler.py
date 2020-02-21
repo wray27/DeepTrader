@@ -1,10 +1,16 @@
 import csv
 import sys
 import numpy as np
-from sklearn.preprocessing import normalize
+
 # read the data from CSV file  
 # d_type 
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
+
+
+def normalize_data(x):
+    normalized = (x-np.min(x))/(np.max(x)-np.min(x))
+    return normalized
+
 def read_data(filename, d_type):
     data = np.array([])
 
@@ -53,14 +59,15 @@ def read_data2(filename, d_type):
             else:
                 data = np.append(data, float(row[0]))
 
-    data = np.reshape(data, (-1, 1))
-    data = normalize(data)
-    data = np.reshape(data, (-1))
+    
+    data = normalize_data(data)
+    
         
     return data
 
 def read_all_data(filename):
     data = {}
+    
 
     with open(filename, "r") as f:
         f_data = csv.reader(f)
@@ -86,12 +93,13 @@ def read_all_data(filename):
         for dataset in data:
             if dataset != "TIME" or dataset != "IMB":
                 # data[dataset] = (data[dataset] - np.mean(data[dataset])) / np.max(data[dataset])
-                data[dataset] = np.reshape(data[dataset],(-1,1))
-                data[dataset] = normalize(data[dataset])
-                data[dataset] = np.reshape(data[dataset], (-1))
- 
-    return data
-
+                
+                data[dataset] = normalize_data(data[dataset])
+                
+    temp = np.array([])
+    temp = np.vstack([data[d] for d in data])
+    
+    return temp
 
 def read_data_from_multiple_files():
     
@@ -100,20 +108,17 @@ def read_data_from_multiple_files():
     arr2 = []
     for i in range(9):
         filename = "./Data/trial000" + str(i+1) + '.csv'
-        temp = np.array([])
         data = read_all_data(filename)
         labels = read_data2(filename, "TAR")
-        temp = np.vstack([data[d] for d in data])
-        arr.append(temp)
+        arr.append(data)
         arr2.append(labels)
-        # print(temp.shape)
+      
 
     train = np.hstack([arr[i] for i in range(len(arr))])
     labels = np.hstack([arr2[i] for i in range(len(arr2))])
     
-    # print(train.shape, labels.shape)
+   
     train = np.reshape(train, (-1, 1, 7))
-
     labels = np.reshape(labels, (-1, 1))
 
     return train, labels

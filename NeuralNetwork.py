@@ -19,12 +19,12 @@ class NeuralNetwork():
         self.filename = filename
 
 
-    def train(self, X, y, epochs, verbose):
+    def train(self, X, y, epochs, verbose=1):
         self.model.fit(X, y, epochs=epochs, verbose=verbose)
 
-    def test(self, X, y, verbose):
+    def test(self, X, y, verbose=1):
         for i in range(len(X)):
-            input = X[i].reshape((1,self.steps,1))
+            input = X[i].reshape((1,self.steps, self.input_shape[1]))
             yhat = self.model.predict(input, verbose=verbose)
             print(y[i], yhat[0][0])
     
