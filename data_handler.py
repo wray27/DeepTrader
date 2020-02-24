@@ -65,6 +65,35 @@ def read_data2(filename, d_type):
         
     return data
 
+
+def read_data3(filename, d_type):
+    data = np.array([])
+
+    with open(filename, "r") as f:
+        f_data = csv.reader(f)
+
+        for row in f_data:
+            # print(row)
+            if d_type == "MID":
+                data = np.append(data, float(row[1]))
+            elif d_type == "MIC":
+                data = np.append(data, float(row[2]))
+            elif d_type == "IMB":
+                data = np.append(data, float(row[3]))
+            elif d_type == "SPR":
+                data = np.append(data, float(row[4]))
+            elif d_type == "BID":
+                data = np.append(data, float(row[5]))
+            elif d_type == "ASK":
+                data = np.append(data, float(row[6]))
+            elif d_type == "TAR":
+                data = np.append(data, float(row[7]))
+            else:
+                data = np.append(data, float(row[0]))
+
+    return data
+
+
 def read_all_data(filename):
     data = {}
     
