@@ -1,0 +1,17 @@
+
+Inputs			Output
+1. Time			8.Target Price (most recent transaction Price)
+2. Mid price
+3. Micro price
+4. Order Book Imbalance 
+5. Spread
+6. Best Bid
+7. Best Ask 
+
+
+New Potential Inputs
+Weighted moving average of transaction price (see Vytelingum)
+Volatility
+Boolean has a Trade occurred
+-Volumes of Best Bid/Ask
+-Volume of Transactions
