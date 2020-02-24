@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import data_handler
 
 def time_series_plot():
     d_types = ["TIME", "MID", "MIC", "IMB", "SPR"]
     data = {}
     for d in d_types:
         data[d] = np.array([])
-        data[d] = read_data("lob_data.csv", d)
+        data[d] = read_data("./Data/trial0001.csv", d)
 
     # for i in range(1, len(d_types)):
     #     plt.plot(data["TIME"], data[d_types[i]], label=d_types[i])
@@ -25,7 +26,8 @@ def accuracy_plot(actual, preds, baseline):
     plt.legend()
     plt.show()
 
-
+def main():
+    
 
 
 

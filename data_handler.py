@@ -71,7 +71,7 @@ def read_all_data(filename):
 
     with open(filename, "r") as f:
         f_data = csv.reader(f)
-        data["TIME"] = np.array([])
+        # data["TIME"] = np.array([])
         data["MID"] = np.array([])
         data["MIC"] = np.array([])
         data["IMB"] = np.array([])
@@ -81,7 +81,7 @@ def read_all_data(filename):
         # data["TAR"] = np.array([])
 
         for row in f_data:
-            data["TIME"] = np.append(data["TIME"],float(row[0]))
+            # data["TIME"] = np.append(data["TIME"],float(row[0]))
             data["MID"] = np.append(data["MID"],float(row[1]))
             data["MIC"] = np.append(data["MIC"],float(row[2]))
             data["IMB"] = np.append(data["IMB"],float(row[3]))
@@ -91,7 +91,7 @@ def read_all_data(filename):
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
 
         for dataset in data:
-            if dataset != "TIME" or dataset != "IMB":
+            if  dataset != "IMB":
                 # data[dataset] = (data[dataset] - np.mean(data[dataset])) / np.max(data[dataset])
                 
                 data[dataset] = normalize_data(data[dataset])
@@ -118,7 +118,7 @@ def read_data_from_multiple_files():
     labels = np.hstack([arr2[i] for i in range(len(arr2))])
     
    
-    train = np.reshape(train, (-1, 1, 7))
+    train = np.reshape(train, (-1, 1, 6))
     labels = np.reshape(labels, (-1, 1))
 
     return train, labels
