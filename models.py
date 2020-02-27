@@ -126,34 +126,36 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         self.steps = input_shape[0]
        
      
-        self.model.add(LSTM(20, 
-                            activation='relu', input_shape=input_shape))
-        # self.model.add(LSTM(8,  return_sequences=True, activation='relu'))
-        # self.model.add(LSTM(6, activation='relu'))
-        self.model.add(Dense(1))
-        opt = tf.keras.optimizers.SGD(learning_rate=0.1)
-        self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mae')
+        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
+        # self.model.add(LSTM(20, activation='relu'))
+        
+        self.model.add(Dense(2))
+        opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
+        self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mse')
         self.n_features = self.input_shape[1]
         self.filename = filename
     
     def run_all(self):
+        np.set_printoptions(threshold=sys.maxsize)
         train, labels = data_handler.read_data_from_multiple_files()
-        # print(train.shape, labels.shape)
-        test_X = data_handler.read_all_data("./Data/trial0010.csv")
-        test_y = data_handler.read_data2("./Data/trial0010.csv","TAR")
         
-      
-
-        test_X = np.reshape(test_X,(-1, self.steps, self.n_features))
-       
-
-        test_y = np.reshape(test_y, (-1, 1))
+        test_X = data_handler.read_all_data("./Data/trial0010.csv")
+        transact = data_handler.read_data2("./Data/trial0010.csv","TAR")
+        occ = data_handler.read_data2("./Data/trial0010.csv", "OCC")
+        test_y = np.column_stack((transact, occ))
         # print(test_y)
-        self.train(train, labels, epochs =3)
-        self.test(test_X, test_y)
-        # # yhat = self.model.predict(input, verbose=verbose)
-        # # print(y[i], yhat[0][0])
-        # # self.test(test_X, test_y, verbose=1)
+        
+        test_X = np.reshape(test_X,(-1, self.steps, self.n_features))
+        test_y = np.reshape(test_y, (-1, 2))
+        
+        
+        self.train(train, labels, epochs=50)
+        
+        for i in range(len(test_X)):
+            input = test_X[i].reshape((1, self.steps, self.input_shape[1]))
+            yhat = self.model.predict(input, verbose=1)
+            print(test_y[i], yhat[0])
+        
         self.save()
 if __name__ == '__main__':
     
@@ -169,7 +171,7 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    no_features = 6
+    no_features = 7
     no_steps = 1
 
     mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
