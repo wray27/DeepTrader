@@ -104,7 +104,6 @@ def read_data3(filename, d_type):
 def read_all_data(filename):
     data = {}
     
-
     with open(filename, "r") as f:
         f_data = csv.reader(f)
         data["TIME"] = np.array([])
@@ -135,18 +134,18 @@ def read_all_data(filename):
         for dataset in data:
             data[dataset] = normalize_data(data[dataset])
 
-        
-                
+                    
     temp = np.array([])
     temp = np.vstack([data[d] for d in data])
     
     return temp
 
 def read_data_from_multiple_files():
-     
+    no_files = 9
+    no_features = 9
     arr = []
     arr2 = []
-    for i in range(9):
+    for i in range(no_files):
         filename = "./Data/trial000" + str(i+1) + '.csv'
         data = read_all_data(filename)
         
@@ -163,7 +162,7 @@ def read_data_from_multiple_files():
     labels = np.hstack([arr2[i] for i in range(len(arr2))])
     
    
-    train = np.reshape(train, (-1, 1, 8))
+    train = np.reshape(train, (-1, 1, no_features))
     labels = np.reshape(labels, (-1, 2))
 
     return train, labels
