@@ -63,6 +63,8 @@ def read_data2(filename, d_type):
                 data = np.append(data, float(row[7]))
             elif d_type == "OCC":
                 data = np.append(data, float(row[8]))
+            elif d_type == "DT":
+                data = np.append(data, float(row[9]))
             else:
                 data = np.append(data, float(row[0]))
 
@@ -114,6 +116,7 @@ def read_all_data(filename):
         data["ASK"] = np.array([])
         # data["TAR"] = np.array([])
         # data["OCC"] = np.array([])
+        data["DT"] = np.array([])
 
         for row in f_data:
             data["TIME"] = np.append(data["TIME"],float(row[0]))
@@ -125,6 +128,7 @@ def read_all_data(filename):
             data["ASK"] = np.append(data["ASK"], float(row[6]))
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
             # data["OCC"] = np.array(data["OCC"], float(row[8]))
+            data["DT"] = np.append(data["DT"], float(row[9]))
 
         for dataset in data:
             data[dataset] = normalize_data(data[dataset])
@@ -137,8 +141,7 @@ def read_all_data(filename):
     return temp
 
 def read_data_from_multiple_files():
-    
-    
+     
     arr = []
     arr2 = []
     for i in range(9):
@@ -158,7 +161,7 @@ def read_data_from_multiple_files():
     labels = np.hstack([arr2[i] for i in range(len(arr2))])
     
    
-    train = np.reshape(train, (-1, 1, 7))
+    train = np.reshape(train, (-1, 1, 8))
     labels = np.reshape(labels, (-1, 2))
 
     return train, labels

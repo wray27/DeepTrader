@@ -130,7 +130,7 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         # self.model.add(LSTM(20, activation='relu'))
         
         self.model.add(Dense(2))
-        opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
+        opt = tf.keras.optimizers.Adam(learning_rate=1e-6)
         self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mse')
         self.n_features = self.input_shape[1]
         self.filename = filename
@@ -143,13 +143,11 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         transact = data_handler.read_data2("./Data/trial0010.csv","TAR")
         occ = data_handler.read_data2("./Data/trial0010.csv", "OCC")
         test_y = np.column_stack((transact, occ))
-        # print(test_y)
         
         test_X = np.reshape(test_X,(-1, self.steps, self.n_features))
         test_y = np.reshape(test_y, (-1, 2))
         
-        
-        self.train(train, labels, epochs=50)
+        self.train(train, labels, epochs=20)
         
         for i in range(len(test_X)):
             input = test_X[i].reshape((1, self.steps, self.input_shape[1]))
@@ -171,7 +169,7 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    no_features = 7
+    no_features = 8
     no_steps = 1
 
     mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
