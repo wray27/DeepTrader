@@ -6,14 +6,16 @@ Inputs			Output
 4. Order Book Imbalance 
 5. Spread
 6. Best Bid
-7. Best Ask 
+7. Best Ask
+10. Delta T (Time Since last Trade)
+11. Boolean has a Trade occurred
+12. Volatility
 
 
 New Potential Inputs
 Weighted moving average of transaction price (see Vytelingum)
-Volatility
-Delta T (Time Since last Trade)
-Boolean has a Trade occurred
+
+
 -Volumes of Best Bid/Ask
 -Volume of Transactions
 

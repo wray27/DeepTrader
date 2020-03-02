@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    no_features = 8
+    no_features = 9
     no_steps = 1
 
     mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")

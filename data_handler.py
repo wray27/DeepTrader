@@ -117,6 +117,7 @@ def read_all_data(filename):
         # data["TAR"] = np.array([])
         # data["OCC"] = np.array([])
         data["DT"] = np.array([])
+        data["WMA"] = np.array([])
 
         for row in f_data:
             data["TIME"] = np.append(data["TIME"],float(row[0]))
@@ -129,6 +130,7 @@ def read_all_data(filename):
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
             # data["OCC"] = np.array(data["OCC"], float(row[8]))
             data["DT"] = np.append(data["DT"], float(row[9]))
+            data["WMA"] = np.append(data["WMA"], float(row[10]))
 
         for dataset in data:
             data[dataset] = normalize_data(data[dataset])
