@@ -77,4 +77,17 @@ class Trader:
                 return None
 
 class DeepTrader(Trader):
-    pass
+    
+    def __init__(self, ttype, tid, balance, time):
+        self.ttype = ttype      # what type / strategy this trader is
+        self.tid = tid          # trader unique ID code
+        self.balance = balance  # money in the bank
+        self.blotter = []       # record of trades executed
+        # customer orders currently being worked (fixed at 1)
+        self.orders = []
+        self.n_quotes = 0       # number of quotes live on LOB
+        self.birthtime = time   # used when calculating age of a trader/strategy
+        self.profitpertime = 0  # profit per unit time
+        self.n_trades = 0       # how many trades has this trader done?
+        self.lastquote = None   # record of what its last quote was
+        self.model = None

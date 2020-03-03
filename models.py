@@ -6,6 +6,7 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
+from keras.optimizers import Adam
 import data_handler
 import data_visualizer
 import NeuralNetwork
@@ -130,7 +131,7 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         # self.model.add(LSTM(20, activation='relu'))
         
         self.model.add(Dense(2))
-        opt = tf.keras.optimizers.Adam(learning_rate=1e-6)
+        opt = Adam(learning_rate=1e-7)
         self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mse')
         self.n_features = self.input_shape[1]
         self.filename = filename
@@ -148,11 +149,11 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         test_y = np.reshape(test_y, (-1, 2))
         
         self.train(train, labels, epochs=20)
-        
-        for i in range(len(test_X)):
-            input = test_X[i].reshape((1, self.steps, self.input_shape[1]))
-            yhat = self.model.predict(input, verbose=1)
-            print(test_y[i], yhat[0])
+        self.train(test_X, test_y, epochs=1)
+        # for i in range(len(test_X)):
+        #     input = test_X[i].reshape((1, self.steps, self.input_shape[1]))
+        #     yhat = self.model.predict(input, verbose=1)
+        #     print(test_y[i], yhat[0])
         
         self.save()
 if __name__ == '__main__':
