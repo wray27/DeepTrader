@@ -158,25 +158,22 @@ class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
         self.save()
 if __name__ == '__main__':
     
-    ## single step vanilla LSTM
+    # single step vanilla LSTM
     # steps = 9
     # vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
     # vanilla.run_all2()
 
     # multiple step vanilla LSTM
-    # in_steps = 12
-    # out_steps = 36
-    # mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
-    # mul.run_all()
+    in_steps = 12
+    out_steps = 36
+    mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
+    mul.run_all()
 
     # multivariate LSTM
-    no_features = 9
-    no_steps = 1
-
-    mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
-   
-
-    mv.run_all()
+    # no_features = 9
+    # no_steps = 1
+    # mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
+    # mv.run_all()
 
 
 
