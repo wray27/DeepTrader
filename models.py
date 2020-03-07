@@ -94,13 +94,13 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
             input = X[i].reshape((1, self.steps, 1))
             yhat = self.model.predict(input, verbose=verbose)
             preds = np.append(preds, yhat[0][self.out_steps - 1])
-            baseline = np.append(baseline, np.mean(input[0]))
+            # baseline = np.append(baseline, np.mean(input[0]))
             actual = np.append(actual, y[i][self.out_steps - 1])
             
-            print(actual[i], preds[i], baseline[i])
+            print(actual[i], preds[i])
 
         # print(len(y), len(preds), len(baseline))
-        data_visualizer.accuracy_plot(actual, preds, baseline)
+        data_visualizer.accuracy_plot(actual, preds)
 
     def run_all(self):
     
@@ -164,8 +164,8 @@ if __name__ == '__main__':
     # vanilla.run_all2()
 
     # multiple step vanilla LSTM
-    in_steps = 12
-    out_steps = 36
+    in_steps = 9
+    out_steps = 1
     mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
     mul.run_all()
 
