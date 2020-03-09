@@ -36,7 +36,7 @@ class DeepTrader(object):
                 qid = lob['QID']
                 limit = self.orders[0].price
                 otype = self.orders[0].otype
-                input = getinput(lob)
+                input = getmarket_conditions(lob)
                 model_price = self.model.predict(input)[0][0]
                 
                 if otype == 'Bid':
@@ -49,7 +49,7 @@ class DeepTrader(object):
                 self.lastquote = order
         return order
     
-    def getinput(self, lob):
+    def getmarket_conditions(self, lob):
         time = lob['time'] 
         bids = lob['bids'] 
         asks = lob['asks'] 
