@@ -9,10 +9,10 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 import data_handler
 import data_visualizer
-import NeuralNetwork
+from NeuralNetwork import NeuralNetwork
 
 # Univariate LSTM used to predict a single next step in time series data
-class Vanilla_LSTM(NeuralNetwork.NeuralNetwork):
+class Vanilla_LSTM(NeuralNetwork):
     def __init__(self, input_shape, filename):
         # inputs: A 3D tensor with shape[batch, timesteps, feature].
 
@@ -69,7 +69,7 @@ class Vanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.test(X, y, verbose=1)
 
 
-class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
+class MultiVanilla_LSTM(NeuralNetwork):
     def __init__(self, input_shape, out_steps, filename):
         # inputs: A 3D tensor with shape[batch, timesteps, feature].
 
@@ -120,7 +120,7 @@ class MultiVanilla_LSTM(NeuralNetwork.NeuralNetwork):
         self.save()
 
 
-class Multivariate_LSTM(NeuralNetwork.NeuralNetwork):
+class Multivariate_LSTM(NeuralNetwork):
     def __init__(self, input_shape, filename):
         self.input_shape = input_shape
         self.model = Sequential()
@@ -164,16 +164,16 @@ if __name__ == '__main__':
     # vanilla.run_all2()
 
     # multiple step vanilla LSTM
-    in_steps = 9
-    out_steps = 1
-    mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
-    mul.run_all()
+    # in_steps = 9
+    # out_steps = 1
+    # mul = MultiVanilla_LSTM((in_steps,1), out_steps, f"MIC_MUL_Predictor")
+    # mul.run_all()
 
     # multivariate LSTM
-    # no_features = 9
-    # no_steps = 1
-    # mv = Multivariate_LSTM((no_steps, no_features), f"multivariate_network")
-    # mv.run_all()
+    no_features = 9
+    no_steps = 1
+    mv = Multivariate_LSTM((no_steps, no_features), f"DeepTrader1.0")
+    mv.run_all()
 
 
 

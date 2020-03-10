@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras.optimizers import Adam
+from NeuralNetwork import NeuralNetwork as nn
 
 
 class DeepTrader(object):
@@ -23,7 +24,7 @@ class DeepTrader(object):
         self.n_trades = 0       # how many trades has this trader done?
         self.lastquote = None   # record of what its last quote was
         self.filename = filename
-        self.model = tf.keras.models.load_model(self.filename)
+        self.model = nn.load_network(self.filename)
         
 
     def getorder(self, time, countdown, lob):
