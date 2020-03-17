@@ -7,11 +7,13 @@ from keras.layers import LSTM
 from keras.layers import Dense
 from keras.optimizers import Adam
 from NeuralNetwork import NeuralNetwork as nn
+from Trader import Trader
+from Order import Order
 
 
-class DeepTrader(object):
+class DeepTrader(Trader):
     
-    def __init__(self, filename, ttype, tid, balance, time):
+    def __init__(self, ttype, tid, balance, time, filename):
         self.ttype = ttype      # what type / strategy this trader is
         self.tid = tid          # trader unique ID code
         self.balance = balance  # money in the bank
@@ -19,38 +21,17 @@ class DeepTrader(object):
         # customer orders currently being worked (fixed at 1)
         self.orders = []
         self.n_quotes = 0       # number of quotes live on LOB
+        self.willing = 1        # used in ZIP etc
+        self.able = 1           # used in ZIP etc
         self.birthtime = time   # used when calculating age of a trader/strategy
         self.profitpertime = 0  # profit per unit time
         self.n_trades = 0       # how many trades has this trader done?
         self.lastquote = None   # record of what its last quote was
         self.filename = filename
         self.model = nn.load_network(self.filename)
-        
 
-    def getorder(self, time, countdown, lob):
-        if len(self.orders) < 1:
-                # no orders: return NULL
-                order = None
-        else:
-                minprice = lob['bids']['worst']
-                maxprice = lob['asks']['worst']
-                qid = lob['QID']
-                limit = self.orders[0].price
-                otype = self.orders[0].otype
-                input = getmarket_conditions(lob)
-                model_price = self.model.predict(input)[0][0]
-                
-                if otype == 'Bid':
-                    quoteprice = random.randint(model_price, limit)
-                else:
-                    quoteprice = random.randint(limit, model_price)
-                    # NB should check it == 'Ask' and barf if not
-                order = Order(self.tid, otype, quoteprice,
-                                self.orders[0].qty, time, qid)
-                self.lastquote = order
-        return order
-    
-    def getmarket_conditions(self, lob):
+    @staticmethod
+    def getmarket_conditions(lob):
         time = lob['time'] 
         bids = lob['bids'] 
         asks = lob['asks'] 
@@ -107,5 +88,31 @@ class DeepTrader(object):
         market_conditions = np.array([time, mid_price, micro_price, imbalances, spread, x, y, delta_t, weighted_moving_average])
         market_conditions = market_conditions.reshape((1, 1, 9))
         return market_conditions
+
+    def getorder(self, time, countdown, lob):
+        if len(self.orders) < 1:
+                # no orders: return NULL
+                order = None
+        else:
+                minprice = lob['bids']['worst']
+                maxprice = lob['asks']['worst']
+                qid = lob['QID']
+                limit = self.orders[0].price
+                otype = self.orders[0].otype
+                input = DeepTrader.getmarket_conditions(lob)
+                model_price = self.model.predict(input)[0][0]
+                
+                print model_price
+                
+                if otype == 'Bid':
+                    quoteprice = random.randint(int(round(model_price)), limit)
+                else:
+                    quoteprice = random.randint(limit, int(round(model_price)))
+                    # NB should check it == 'Ask' and barf if not
+                order = Order(self.tid, otype, quoteprice,
+                                self.orders[0].qty, time, qid)
+                self.lastquote = order
+        return order
+    
 
 

@@ -5,4 +5,4 @@
 *.csv
 /__pycache__
 /Data/.DS_Store
-/DeepTrader.pyc
+*.pyc
