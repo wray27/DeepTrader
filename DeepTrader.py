@@ -30,8 +30,7 @@ class DeepTrader(Trader):
         self.filename = filename
         self.model = nn.load_network(self.filename)
 
-    @staticmethod
-    def getmarket_conditions(lob):
+    def getmarket_conditions(self, lob):
         time = lob['time'] 
         bids = lob['bids'] 
         asks = lob['asks'] 
@@ -94,22 +93,33 @@ class DeepTrader(Trader):
                 # no orders: return NULL
                 order = None
         else:
-                minprice = lob['bids']['worst']
-                maxprice = lob['asks']['worst']
                 qid = lob['QID']
+                tape = lob['tape']
+                trades = list(filter(lambda d: d['type'] == "Trade", tape))
+                trade_prices = np.array([0])
+                for t in trades:
+                    trade_prices = np.append(trade_prices, t['price'])
+                
+                if len(trade_prices) > 1 :
+                    trade_prices = trade_prices[1:] 
+              
                 limit = self.orders[0].price
                 otype = self.orders[0].otype
-                input = DeepTrader.getmarket_conditions(lob)
-                model_price = self.model.predict(input)[0][0]
+                input = self.getmarket_conditions(lob)
+                normalized = self.model.predict(input)[0][0]
                 
-                print model_price
+                denormalized = (normalized) * (np.max(trade_prices) - np.min(trade_prices)) + np.min(trade_prices)
+                model_price = int(round(denormalized, 0))
                 
-                if otype == 'Bid':
-                    quoteprice = random.randint(int(round(model_price)), limit)
+                if(otype == "Bid"):
+                   if model_price > limit:
+                        model_price = limit 
                 else:
-                    quoteprice = random.randint(limit, int(round(model_price)))
-                    # NB should check it == 'Ask' and barf if not
-                order = Order(self.tid, otype, quoteprice,
+                   if model_price < limit:
+                        model_price = limit 
+                  
+    
+                order = Order(self.tid, otype, model_price,
                                 self.orders[0].qty, time, qid)
                 self.lastquote = order
         return order
