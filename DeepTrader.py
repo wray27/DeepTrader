@@ -1,4 +1,5 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import random
 import numpy as np
 import tensorflow as tf
@@ -10,6 +11,13 @@ from NeuralNetwork import NeuralNetwork as nn
 from Trader import Trader
 from Order import Order
 
+def softmax(X):
+    expo = np.exp(X)
+    expo_sum = np.sum(np.exp(X))
+    return expo/expo_sum
+
+def sigmoid(X):
+       return 1/(1+np.exp(-X))
 
 class DeepTrader(Trader):
     
@@ -28,6 +36,8 @@ class DeepTrader(Trader):
         self.n_trades = 0       # how many trades has this trader done?
         self.lastquote = None   # record of what its last quote was
         self.filename = filename
+        self.population_size = 30
+        self.population = np.array([x*0.2+ 0.2  for x in range(self.population_size)])
         self.model = nn.load_network(self.filename)
 
     def getmarket_conditions(self, lob):
@@ -87,7 +97,48 @@ class DeepTrader(Trader):
         market_conditions = np.array([time, mid_price, micro_price, imbalances, spread, x, y, delta_t, weighted_moving_average])
         market_conditions = market_conditions.reshape((1, 1, 9))
         return market_conditions
+   
+    def fitness_function(self, otype, model_price, limit):
 
+        
+        prices = self.population * limit
+        scores = np.array([])
+
+        if otype == "Bid":
+            
+            utilities = sigmoid((limit - prices)) 
+            # distances = sigmoid(np.square(prices - model_price)) * 0.01
+            # scores = utilities - distances
+            # print scores
+
+        else:
+    
+            utilities = sigmoid(prices - limit)
+            # distances = sigmoid(np.square(prices - model_price)) * 0.01
+            # scores = utilities - distances
+            # print scores
+ 
+        scores = softmax(utilities)
+        # print scores
+        return scores
+    
+    def selection(self, scores):
+        
+        selecting = True
+        parents = []
+
+        while selecting:
+            parents = np.random.choice(self.population_size,2,p=scores)
+            if parents[0] != parents[1]: selecting = False
+        
+        return parents
+    
+    def crossover(self, parents):
+        x = np.mean([self.population[parents[0]], self.population[parents[1]]])
+        y = x + random.uniform(-0.1,0.1)
+        return y 
+        
+        
     def getorder(self, time, countdown, lob):
         if len(self.orders) < 1:
                 # no orders: return NULL
@@ -110,16 +161,24 @@ class DeepTrader(Trader):
                 
                 denormalized = (normalized) * (np.max(trade_prices) - np.min(trade_prices)) + np.min(trade_prices)
                 model_price = int(round(denormalized, 0))
+                scores = self.fitness_function(otype, model_price, limit)
+                parents = self.selection(scores)
+                offspring = self.crossover(parents)
+
+                least_fittest = np.argmin(scores)
+                self.population[least_fittest] = offspring
+                price = int(offspring * limit)
+
                 
                 if(otype == "Bid"):
-                   if model_price > limit:
-                        model_price = limit 
+                    if price > limit:
+                        price = limit 
                 else:
-                   if model_price < limit:
-                        model_price = limit 
-                  
-    
-                order = Order(self.tid, otype, model_price,
+                    if price < limit:
+                        price = limit 
+                # print otype
+                # print(self.population)
+                order = Order(self.tid, otype, price ,
                                 self.orders[0].qty, time, qid)
                 self.lastquote = order
         return order
