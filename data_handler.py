@@ -60,7 +60,7 @@ def read_data2(filename, d_type):
             elif d_type == "ASK":
                 data = np.append(data, float(row[6]))
             elif d_type == "TAR":
-                data = np.append(data, float(row[7]))
+                data = np.append(data, float(row[9]))
             elif d_type == "OCC":
                 data = np.append(data, float(row[8]))
             elif d_type == "DT":
@@ -107,6 +107,8 @@ def read_all_data(filename):
     with open(filename, "r") as f:
         f_data = csv.reader(f)
         data["TIME"] = np.array([])
+        data["TYP"] = np.array([])
+        data["LIM"] = np.array([])
         data["MID"] = np.array([])
         data["MIC"] = np.array([])
         data["IMB"] = np.array([])
@@ -115,21 +117,25 @@ def read_all_data(filename):
         data["ASK"] = np.array([])
         # data["TAR"] = np.array([])
         # data["OCC"] = np.array([])
-        data["DT"] = np.array([])
-        data["WMA"] = np.array([])
+        # data["DT"] = np.array([])
+        # data["WMA"] = np.array([])
 
         for row in f_data:
+            # print(row)
             data["TIME"] = np.append(data["TIME"],float(row[0]))
-            data["MID"] = np.append(data["MID"],float(row[1]))
-            data["MIC"] = np.append(data["MIC"],float(row[2]))
-            data["IMB"] = np.append(data["IMB"],float(row[3]))
-            data["SPR"] = np.append(data["SPR"], float(row[4]))
-            data["BID"] = np.append(data["BID"], float(row[5]))
-            data["ASK"] = np.append(data["ASK"], float(row[6]))
+            data["TYP"] = np.append(data["TYP"], float(row[1]))
+            data["LIM"] = np.append(data["LIM"], float(row[2]))
+            data["MID"] = np.append(data["MID"],float(row[3]))
+            data["MIC"] = np.append(data["MIC"], float(row[4]))
+            data["IMB"] = np.append(data["IMB"],float(row[5]))
+            data["SPR"] = np.append(data["SPR"], float(row[6]))
+            data["BID"] = np.append(data["BID"], float(row[7]))
+            data["ASK"] = np.append(data["ASK"], float(row[8]))
+            
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
             # data["OCC"] = np.array(data["OCC"], float(row[8]))
-            data["DT"] = np.append(data["DT"], float(row[9]))
-            data["WMA"] = np.append(data["WMA"], float(row[10]))
+            # data["DT"] = np.append(data["DT"], float(row[9]))
+            # data["WMA"] = np.append(data["WMA"], float(row[10]))
 
         for dataset in data:
             data[dataset] = normalize_data(data[dataset])
@@ -137,33 +143,31 @@ def read_all_data(filename):
                     
     temp = np.array([])
     temp = np.vstack([data[d] for d in data])
-    
+  
     return temp
 
 def read_data_from_multiple_files():
     no_files = 9
     no_features = 9
-    arr = []
-    arr2 = []
+    arr = np.array([])
+    arr2 = np.array([])
     for i in range(no_files):
-        filename = "./Data/trial000" + str(i+1) + '.csv'
+        filename = f"./Data/trial{(i+1):04}.csv"
         data = read_all_data(filename)
         
         transaction_prices = read_data2(filename, "TAR")
-        occurrences = read_data2(filename, "OCC")
-        
-        labels = np.column_stack((transaction_prices, occurrences))
 
-        arr.append(data)
-        arr2.append(labels)
-      
+        arr = np.append(arr, data)
+        arr2 = np.append(arr2, transaction_prices)
+
+    # print(arr.shape, arr2.shape)
 
     train = np.hstack([arr[i] for i in range(len(arr))])
     labels = np.hstack([arr2[i] for i in range(len(arr2))])
     
    
     train = np.reshape(train, (-1, 1, no_features))
-    labels = np.reshape(labels, (-1, 2))
+    labels = np.reshape(labels, (-1, 1))
 
     return train, labels
 

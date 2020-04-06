@@ -130,23 +130,23 @@ class Multivariate_LSTM(NeuralNetwork):
         self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
         # self.model.add(LSTM(20, activation='relu'))
         
-        self.model.add(Dense(2))
+        self.model.add(Dense(1))
         opt = Adam(learning_rate=1e-7)
-        self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mse')
+        self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mae')
         self.n_features = self.input_shape[1]
         self.filename = filename
     
     def run_all(self):
         np.set_printoptions(threshold=sys.maxsize)
         train, labels = data_handler.read_data_from_multiple_files()
+        # print(len(train),len(labels))
         
         test_X = data_handler.read_all_data("./Data/trial0010.csv")
-        transact = data_handler.read_data2("./Data/trial0010.csv","TAR")
-        occ = data_handler.read_data2("./Data/trial0010.csv", "OCC")
-        test_y = np.column_stack((transact, occ))
+        test_y = data_handler.read_data2("./Data/trial0010.csv","TAR")
+       
         
         test_X = np.reshape(test_X,(-1, self.steps, self.n_features))
-        test_y = np.reshape(test_y, (-1, 2))
+        test_y = np.reshape(test_y, (-1, 1))
         
         self.train(train, labels, epochs=20)
         self.train(test_X, test_y, epochs=1)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
     # multivariate LSTM
     no_features = 9
     no_steps = 1
-    mv = Multivariate_LSTM((no_steps, no_features), f"DeepTrader1.0")
+    mv = Multivariate_LSTM((no_steps, no_features), f"DeepTrader1.1")
     mv.run_all()
 
 
