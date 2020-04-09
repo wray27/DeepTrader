@@ -5,4 +5,5 @@
 *.csv
 /__pycache__
 /Data/.DS_Store
+/Models/.DS_Store
 *.pyc

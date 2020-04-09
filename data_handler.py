@@ -7,10 +7,18 @@ import numpy as np
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
 
 
-def normalize_data(x):
-    normalized = (x-np.min(x))/(np.max(x)-np.min(x))
+def normalize_data(x, max=0, min=0, train=True):
+    if train:
+        max = np.max(x)
+        min = np.min(x)
+
+    normalized = (x-min)/(max-min)
     return normalized
 
+
+def normalize_data2(x):
+    normalized = (2*(x-np.min(x))/(np.max(x)-np.min(x))) - 1
+    return normalized
 
 def standardize_data(x):
     standardized = (x - np.mean(x)) / np.std(x)
@@ -94,7 +102,7 @@ def read_data3(filename, d_type):
             elif d_type == "ASK":
                 data = np.append(data, float(row[6]))
             elif d_type == "TAR":
-                data = np.append(data, float(row[7]))
+                data = np.append(data, float(row[9]))
             else:
                 data = np.append(data, float(row[0]))
 
@@ -132,44 +140,104 @@ def read_all_data(filename):
             data["BID"] = np.append(data["BID"], float(row[7]))
             data["ASK"] = np.append(data["ASK"], float(row[8]))
             
+            # data["TIME"] = np.append(data["TIME"], float(row[0]))
+            # data["TYP"] = np.append(data["TYP"], float(row[1]))
+            # data["LIM"] = np.append(data["LIM"], float(row[1]))
+            # data["MID"] = np.append(data["MID"], float(row[2]))
+            # data["MIC"] = np.append(data["MIC"], float(row[3]))
+            # data["IMB"] = np.append(data["IMB"], float(row[4]))
+            # data["SPR"] = np.append(data["SPR"], float(row[5]))
+            # data["BID"] = np.append(data["BID"], float(row[6]))
+            # data["ASK"] = np.append(data["ASK"], float(row[7]))
+
             # data["TAR"] = np.append(data["TAR"], float(row[7]))
             # data["OCC"] = np.array(data["OCC"], float(row[8]))
             # data["DT"] = np.append(data["DT"], float(row[9]))
             # data["WMA"] = np.append(data["WMA"], float(row[10]))
 
-        for dataset in data:
-            data[dataset] = normalize_data(data[dataset])
+        # for dataset in data:
+        #     data[dataset] = normalize_data2(data[dataset])
 
                     
     temp = np.array([])
-    temp = np.vstack([data[d] for d in data])
+    temp = np.column_stack([data[d] for d in data])
   
     return temp
 
-def read_data_from_multiple_files():
-    no_files = 9
-    no_features = 9
-    arr = np.array([])
-    arr2 = np.array([])
-    for i in range(no_files):
-        filename = f"./Data/trial{(i+1):04}.csv"
-        data = read_all_data(filename)
-        
-        transaction_prices = read_data2(filename, "TAR")
-
-        arr = np.append(arr, data)
-        arr2 = np.append(arr2, transaction_prices)
-
-    # print(arr.shape, arr2.shape)
-
-    train = np.hstack([arr[i] for i in range(len(arr))])
-    labels = np.hstack([arr2[i] for i in range(len(arr2))])
+def read_data_from_multiple_files(no_files, no_features):
     
-   
-    train = np.reshape(train, (-1, 1, no_features))
-    labels = np.reshape(labels, (-1, 1))
+    X = np.array([[]])
+    Y = np.array([])
+    
+    # retrieving data from multiple files
+    for i in range(no_files):
+        filename = f"./Data/Training/trial{(i+1):04}.csv"
+        data = read_all_data(filename)
+        transaction_prices = read_data3(filename, "TAR")
+        X = np.append(X, data)
+        Y = np.append(Y, transaction_prices)
 
-    return train, labels
+    # reshaping input data
+    X = np.reshape(X, (-1, no_features))
+
+
+    return X, Y
+
+
+def get_data(no_files, no_features):
+
+    # obtaining data
+    X, Y = read_data_from_multiple_files(no_files, no_features)
+    # print(X.shape, Y.shape)
+    # ratio of split as an array
+    ratio = [9,1]
+
+    # splitting train and test data for targets and input
+    train_X, test_X = split_train_test_data(X, ratio)
+    train_Y, test_Y = split_train_test_data(Y, ratio)
+
+    # reshaping input to be correct
+    train_X = np.reshape(train_X,(-1, no_features))
+    test_X = np.reshape(test_X, (-1, no_features))
+
+    train_max = np.array([float(0)]*(no_features + 1))
+    train_min = np.array([float(0)]*(no_features + 1))
+
+    # normalizing data
+    # note: treating the test set the same way as the training set
+    for c in range(no_features):
+        # storing values used to scale
+        train_max[c] = np.max(train_X[:, c])
+        train_min[c] = np.min(train_X[:, c])
+        
+        # normalizing each feature using the only the training data to scale
+        train_X[:, c] = normalize_data(train_X[:,c])
+        test_X[:, c] = normalize_data(test_X[:, c], max=train_max[c], min=train_min[c], train=False)
+        # print(np.max(train_X[:, c]), np.min(train_X[:, c]))
+
+    # normalizing target data in the same way
+    train_max[no_features] = np.max(train_Y)
+    train_min[no_features] = np.min(train_Y)
+
+    train_Y = normalize_data(train_Y)
+    test_Y = normalize_data(test_Y, max=train_max[no_features], min=train_min[no_features], train=False)
+
+    print(train_max)
+    print(train_min)
+    # print(train_X)
+    # print(test_X)
+    # print(train_Y)
+    # print(test_Y)
+    
+    # reshaping input and target data for nn
+    train_X = np.reshape(train_X, (-1, 1, no_features))
+    train_Y = np.reshape(train_Y, (-1, 1))
+    test_X = np.reshape(test_X, (-1, 1, no_features))
+    test_Y = np.reshape(test_Y, (-1, 1))
+
+    return train_X, train_Y, test_X, test_Y
+
+
 
 
 # splitting data into input and output signal
@@ -240,16 +308,10 @@ def split_train_test_data(data, ratio):
     B = np.array([])
 
     split_index = int( ratio[0] / (ratio[0] + ratio[1]) * len(data) )
-    # print(split_index)
 
     A = np.append(A, data[:split_index])
-    # train_mean = np.mean(A)
-    # train_std = np.std(A)
-    # A = (A - train_mean) / train_std
-
     B = np.append(B, data[split_index:])
-    
-    print("shape of normalized data: ",A.shape)
+
     return A, B
 
 

@@ -1,12 +1,16 @@
 import csv
 import sys
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import LSTM
+from keras.layers import Dropout
 from keras.layers import Dense
 from keras.optimizers import Adam
+from keras.optimizers import SGD
+from keras.regularizers import l2
 import data_handler
 import data_visualizer
 from NeuralNetwork import NeuralNetwork
@@ -121,43 +125,38 @@ class MultiVanilla_LSTM(NeuralNetwork):
 
 
 class Multivariate_LSTM(NeuralNetwork):
-    def __init__(self, input_shape, filename):
+    def __init__(self, no_files, input_shape, filename):
+        
+        # setup
         self.input_shape = input_shape
         self.model = Sequential()
         self.steps = input_shape[0]
-       
-     
-        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
-        # self.model.add(LSTM(20, activation='relu'))
-        
-        self.model.add(Dense(1))
-        opt = Adam(learning_rate=1e-7)
-        self.model.compile(optimizer=opt, metrics=['accuracy'], loss='mae')
         self.n_features = self.input_shape[1]
         self.filename = filename
-    
+        self.no_files = no_files
+
+        # architecture
+        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
+        # self.model.add(Dropout(0.5))
+        self.model.add(Dense(1))
+
+        # compiling + options
+        opt = Adam(learning_rate=1.5e-5)
+        self.model.compile(optimizer=opt, metrics=['mae','msle','mse'], loss='mse')
+        
+        
     def run_all(self):
-        np.set_printoptions(threshold=sys.maxsize)
-        train, labels = data_handler.read_data_from_multiple_files()
-        # print(len(train),len(labels))
         
-        test_X = data_handler.read_all_data("./Data/trial0010.csv")
-        test_y = data_handler.read_data2("./Data/trial0010.csv","TAR")
-       
-        
-        test_X = np.reshape(test_X,(-1, self.steps, self.n_features))
-        test_y = np.reshape(test_y, (-1, 1))
-        
-        self.train(train, labels, epochs=20)
-        self.train(test_X, test_y, epochs=1)
-        # for i in range(len(test_X)):
-        #     input = test_X[i].reshape((1, self.steps, self.input_shape[1]))
-        #     yhat = self.model.predict(input, verbose=1)
-        #     print(test_y[i], yhat[0])
-        
+        X, Y, test_X, test_Y = data_handler.get_data(self.no_files, self.n_features)
+        self.train(X, Y, epochs=200)
+        self.test(test_X, test_Y)
+        # self.train(test_X, test_Y, epochs=1)
         self.save()
+
+
 if __name__ == '__main__':
-    
+    np.set_printoptions(threshold=sys.maxsize)
+
     # single step vanilla LSTM
     # steps = 9
     # vanilla = Vanilla_LSTM((steps,1),  f"MIC_Predictor_{steps}.8")
@@ -172,7 +171,8 @@ if __name__ == '__main__':
     # multivariate LSTM
     no_features = 9
     no_steps = 1
-    mv = Multivariate_LSTM((no_steps, no_features), f"DeepTrader1.1")
+    no_files = 10
+    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_2_1")
     mv.run_all()
 
 
