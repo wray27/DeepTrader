@@ -32,19 +32,29 @@ class NeuralNetwork():
     
     def save(self):
 
-        # create new directory
+        # create new directory if not already there
         path = f"./Models/{self.filename}/"
         file = f"{path}/{self.filename}"
-        os.mkdir(path)
+        try: 
+            os.mkdir(path)
+        except:
+            pass
 
         # serialize model to JSON
         model_json = self.model.to_json()
         with open(file + ".json", "w") as json_file:
             json_file.write(model_json)
         
-        # serialize weights to HDF5
+        # serialize weights to HDF5 
         self.model.save_weights(file + ".h5")
-        print("Saved model to disk")
+
+        # saving normalization values to csv
+        with open(file + '.csv', "w") as csv_file:
+            writer = csv.writer(csv_file, delimiter=',')
+            writer.writerow(self.max_vals)
+            writer.writerow(self.min_vals)
+
+        print("Saved model to disk.")
 
     @staticmethod
     def load_network(filename):

@@ -134,6 +134,8 @@ class Multivariate_LSTM(NeuralNetwork):
         self.n_features = self.input_shape[1]
         self.filename = filename
         self.no_files = no_files
+        # self.max_vals = np.array([])
+        # self.min_vals = np.array([])
 
         # architecture
         self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
@@ -147,7 +149,13 @@ class Multivariate_LSTM(NeuralNetwork):
         
     def run_all(self):
         
+        # retrieveing data
         X, Y, test_X, test_Y = data_handler.get_data(self.no_files, self.n_features)
+
+        # storing normalization values
+        self.max_vals, self.min_vals = data_handler.normalization_values(np.reshape(X, (-1, 9)), np.reshape(Y, (-1)), self.n_features)
+
+        # training and testing followed by saving the network
         self.train(X, Y, epochs=200)
         self.test(test_X, test_Y)
         # self.train(test_X, test_Y, epochs=1)

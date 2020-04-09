@@ -183,6 +183,22 @@ def read_data_from_multiple_files(no_files, no_features):
 
     return X, Y
 
+def normalization_values(X, Y, no_features):
+
+    train_max = np.array([float(0)]*(no_features + 1))
+    train_min = np.array([float(0)]*(no_features + 1))
+
+    for c in range(no_features):
+        # storing values used to scale
+        train_max[c] = np.max(X[:, c])
+        train_min[c] = np.min(X[:, c])
+
+    # normalizing target data in the same way
+    train_max[no_features] = np.max(Y)
+    train_min[no_features] = np.min(Y)
+
+    return train_max, train_min
+
 
 def get_data(no_files, no_features):
 
@@ -200,24 +216,15 @@ def get_data(no_files, no_features):
     train_X = np.reshape(train_X,(-1, no_features))
     test_X = np.reshape(test_X, (-1, no_features))
 
-    train_max = np.array([float(0)]*(no_features + 1))
-    train_min = np.array([float(0)]*(no_features + 1))
+    train_max, train_min = normalization_values(train_X, train_Y, no_features)
 
     # normalizing data
     # note: treating the test set the same way as the training set
     for c in range(no_features):
-        # storing values used to scale
-        train_max[c] = np.max(train_X[:, c])
-        train_min[c] = np.min(train_X[:, c])
-        
         # normalizing each feature using the only the training data to scale
         train_X[:, c] = normalize_data(train_X[:,c])
         test_X[:, c] = normalize_data(test_X[:, c], max=train_max[c], min=train_min[c], train=False)
         # print(np.max(train_X[:, c]), np.min(train_X[:, c]))
-
-    # normalizing target data in the same way
-    train_max[no_features] = np.max(train_Y)
-    train_min[no_features] = np.min(train_Y)
 
     train_Y = normalize_data(train_Y)
     test_Y = normalize_data(test_Y, max=train_max[no_features], min=train_min[no_features], train=False)
