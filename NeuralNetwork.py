@@ -17,11 +17,11 @@ class NeuralNetwork():
     def train(self, X, y, epochs, verbose=1):
         self.model.fit(X, y, epochs=epochs, verbose=verbose)
     
-    def train_debug(self, X, y, epochs, verbose=1):
-        print_weights = LambdaCallback(
-            on_epoch_end=lambda batch, logs: print(self.model.layers[0].get_weights()))
-        self.model.fit(X, y, epochs=epochs, verbose=verbose,
-                       callbacks=[print_weights])
+    # def train_debug(self, X, y, epochs, verbose=1):
+    #     print_weights = LambdaCallback(
+    #         on_epoch_end=lambda batch, logs: print(self.model.layers[0].get_weights()))
+    #     self.model.fit(X, y, epochs=epochs, verbose=verbose,
+    #                    callbacks=[print_weights])
     
 
     def test(self, X, y, verbose=1):
@@ -33,8 +33,8 @@ class NeuralNetwork():
     def save(self):
 
         # create new directory if not already there
-        path = f"./Models/{self.filename}/"
-        file = f"{path}/{self.filename}"
+        path = "./Models/" + self.filename + "/"
+        file = path + self.filename
         try: 
             os.mkdir(path)
         except:
@@ -59,9 +59,9 @@ class NeuralNetwork():
     @staticmethod
     def load_network(filename):
         
-        # path directpry variables
-        path = f"./Models/{filename}/"
-        file = f"{path}/{filename}"
+        # path directory variables
+        path = "./Models/" + filename + "/"
+        file = path + filename
         
         # load json and create model
         json_file = open(file + '.json', 'r')
@@ -75,20 +75,21 @@ class NeuralNetwork():
         # print("Loaded model from disk.")
         return loaded_model
 
-    def normilization_values(self):
+    @staticmethod
+    def normalization_values(filename):
 
         # path directory variables
-        path = f"./Models/{self.filename}/"
-        file = f"{path}/{self.filename}"
+        path = "./Models/" + filename + "/"
+        file = path + filename
 
         # values used to normalize training data
-        self.max_vals = np.array([])
-        self.min_vals = np.array([])
+        max_vals = np.array([])
+        min_vals = np.array([])
         
         with open(file + '.csv', "r") as f:
-            f_data = csv.reader(f)
-            max_vals = np.array([float(f_data[0])])
-            max_vals = np.array([float(f_data[1])])
+            f_data = list(csv.reader(f))
+            max_vals = np.array([float(f.strip()) for f in f_data[0]])
+            min_vals = np.array([float(f.strip()) for f in f_data[1]])
 
         return max_vals, min_vals
 

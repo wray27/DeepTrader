@@ -37,7 +37,9 @@ class DeepTrader(Trader):
         self.lastquote = None   # record of what its last quote was
         self.filename = filename
         self.model = nn.load_network(self.filename)
-        self.model.normalization_values()
+        self.n_features = 9
+        self.max_vals, self.min_vals = nn.normalization_values(self.filename)
+        self.count = [0,0]
 
     def create_input(self, lob):
         time = lob['time'] 
@@ -48,7 +50,7 @@ class DeepTrader(Trader):
         limit = self.orders[0].price
         otype = self.orders[0].otype
         val = 0
-
+      
         if otype == "Ask": val = 1
        
         mid_price = 0
@@ -104,22 +106,41 @@ class DeepTrader(Trader):
    
 
     def getorder(self, time, countdown, lob):
-        qid = lob['QID']
-        tape = lob['tape']
-        otype = self.orders[0].otype
+        
 
         if len(self.orders) < 1:
                 # no orders: return NULL
                 order = None
         else:
+
+            qid = lob['QID']
+            tape = lob['tape']
+            otype = self.orders[0].otype
+            limit = self.orders[0].price
+
             # creating the input for the network
             x = self.create_input(lob)
-            normalized_input = (x-self.model.min_vals) / (self.model.max_vals-self.model.min_vals)
+            # print self.min_vals
+            # print x
+            normalized_input = (x-self.min_vals[:self.n_features]) / (self.max_vals[:self.n_features]-self.min_vals[:self.n_features])
+            normalized_input = np.reshape(normalized_input, (1,1,self.n_features))
+            # print normalized_input
 
             # dealing witht the networks output
-            normalized_output = self.model.predict(x)[0][0]
-            denormalized_output = (normalized_output) * ((self.model.max_vals - self.model.max_vals) + self.model.min_vals)
+            normalized_output = self.model.predict(normalized_input)[0][0]
+            denormalized_output = ((normalized_output) * (self.max_vals[self.n_features] - self.min_vals[self.n_features])) + self.min_vals[self.n_features]
             model_price = int(round(denormalized_output, 0))
+
+            if otype =="Ask":
+                if model_price < limit: 
+                    self.count[1] += 1
+                    model_price = limit
+            else:
+                if model_price > limit: 
+                    self.count[0] += 1
+                    model_price = limit
+          
+            # print(seld.tid, self.count)
            
             order = Order(self.tid, otype, model_price ,
                             self.orders[0].qty, time, qid)
