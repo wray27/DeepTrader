@@ -242,7 +242,7 @@ def get_data(no_files, no_features):
     test_X = np.reshape(test_X, (-1, 1, no_features))
     test_Y = np.reshape(test_Y, (-1, 1))
 
-    return train_X, train_Y, test_X, test_Y
+    return train_X, train_Y, test_X, test_Y, train_max, train_min
 
 
 

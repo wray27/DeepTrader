@@ -150,10 +150,7 @@ class Multivariate_LSTM(NeuralNetwork):
     def run_all(self):
         
         # retrieveing data
-        X, Y, test_X, test_Y = data_handler.get_data(self.no_files, self.n_features)
-
-        # storing normalization values
-        self.max_vals, self.min_vals = data_handler.normalization_values(np.reshape(X, (-1, 9)), np.reshape(Y, (-1)), self.n_features)
+        X, Y, test_X, test_Y, self.max_vals, self.min_vals = data_handler.get_data(self.no_files, self.n_features)
 
         # training and testing followed by saving the network
         self.train(X, Y, epochs=200)
