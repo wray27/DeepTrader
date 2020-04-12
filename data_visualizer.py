@@ -49,23 +49,36 @@ def accuracy_plot(actual, preds, baseline=[]):
     plt.legend()
     plt.show()
 
-def relationships(filename):
-    d_types = ["TIME", "MID", "MIC", "IMB", "SPR", "BID", "ASK", "TAR"]
-    data = {}
-    # print(filename)
-    for d in d_types:
-        data[d] = np.array([])
-        data[d] = data_handler.read_data('./Data/' + filename + ".csv", d)
-    corr = np.corrcoef([data[d] for d in data])
+def relationships():
+    n = 3
+    file = f"./Data/Training/trial{(n):04}.csv"
+    data = data_handler.read_all_data(file)
+   
+    corr = np.corrcoef([data[:][d] for d in range(data.shape[1]) ])
     sns.heatmap(corr)
     plt.show()
 
-def main():
-    # for i in range(1,11):
-    #     filename = 'trial%04d' % i
-    #     hists(filename)
-    relationships("trial0009")
+def profit_time(number):
+
+    market_data, trader_data = data_handler.collect_results(number)
+    # mpl.style.use('seaborn')
+
+    for t in trader_data.keys():
+        plt.plot(market_data["TIME"], trader_data[t]["PPT"],  label=t)
     
+    plt.title("Profit per Trader over Time in BSE")
+    plt.grid()
+    plt.xlabel("Time (s)")
+    plt.ylabel("Profit per Trader")
+    plt.legend()
+    plt.show()
+
+
+def main():
+   
+    relationships()
+    # for i in range(1,11):
+    #     profit_time(i)
 
 
 

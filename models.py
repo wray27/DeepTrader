@@ -1,3 +1,4 @@
+
 import csv
 import sys
 import os
@@ -177,7 +178,7 @@ if __name__ == '__main__':
     no_features = 9
     no_steps = 1
     no_files = 10
-    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_2_1")
+    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_3")
     mv.run_all()
 
 

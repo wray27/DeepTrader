@@ -321,7 +321,43 @@ def split_train_test_data(data, ratio):
 
     return A, B
 
+def collect_results(file_no):
+    market_data = {}
+    market_data["TIME"] = np.array([])
+    market_data["ASK"] = np.array([])
+    market_data["BID"] = np.array([])
 
+    trader_data = {}
+    session_id = ""
+    filename = f"./Data/Results/avg_balance{(file_no):04}.csv"
+    
+    with open(filename, "r") as f:
+        f_data = list(csv.reader(f))
+        first_row= f_data[0]    
+        session_id = first_row[0]
+        no_traders = int((len(first_row) - 5) / 4)
+        
+        for i in range(no_traders):
+            trader = str(first_row[(i*no_traders) + 2]).strip()
+            trader_data[trader] = {}
+            trader_data[trader]["Balance"] = np.array([])
+            trader_data[trader]["n"] = int(str(first_row[(i*no_traders) + 4]).strip())
+            trader_data[trader]["PPT"] = np.array([])
+
+        
+        for row in f_data:
+            # print(row)
+        
+            market_data["TIME"] = np.append( market_data["TIME"], float( str(row[1]).strip()))
+            market_data["ASK"] = np.append( market_data["ASK"],   float( str(row[no_traders*4 + 2]).strip() ) )
+            market_data["BID"] = np.append( market_data["BID"],   float( str(row[no_traders*4 + 3]).strip() ) )
+            
+            for i in range(no_traders):
+                trader = str(row[(i*no_traders) + 2]).strip()
+                trader_data[trader]["Balance"] = np.append(trader_data[trader]["Balance"], int(str(row[(i*no_traders + 3)]).strip()))
+                trader_data[trader]["PPT"] = np.append(trader_data[trader]["PPT"], float(str(row[(i*no_traders)+5]).strip()))
+
+    return market_data, trader_data
 
 if __name__ == "__main__":
-    pass
+    collect_results(1)

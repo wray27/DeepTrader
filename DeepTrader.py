@@ -11,14 +11,6 @@ from NeuralNetwork import NeuralNetwork as nn
 from Trader import Trader
 from Order import Order
 
-def softmax(X):
-    expo = np.exp(X)
-    expo_sum = np.sum(np.exp(X))
-    return expo/expo_sum
-
-def sigmoid(X):
-       return 1/(1+np.exp(-X))
-
 class DeepTrader(Trader):
     
     def __init__(self, ttype, tid, balance, time, filename):
@@ -75,9 +67,6 @@ class DeepTrader(Trader):
                 else:
                     delta_t = trades[0]['time'] - trades[1]['time']
 
-            if len(trade_prices) != 0:
-                weights = [(10/9)*(pow(0.9, i)) for i in range(len(trade_prices))]
-                weighted_moving_average = sum([a * b for a, b in zip(trade_prices, weights)]) / len(trade_prices)
         else:
             delta_t = time
 
@@ -99,7 +88,7 @@ class DeepTrader(Trader):
         if (n_x + n_y != 0 ): 
             micro_price = ((n_x * y) + (n_y * x)) / (n_x + n_y)
             imbalances = (n_x - n_y) / (n_x + n_y)
-
+    
         market_conditions = np.array([time, val, limit, mid_price, micro_price, imbalances, spread, n_x, n_y])
 
         return market_conditions

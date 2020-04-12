@@ -59,7 +59,7 @@ class Trader:
         self.balance += profit
         self.n_trades += 1
         self.profitpertime = self.balance/(time - self.birthtime)
-
+        # print (self.profitpertime)
         if profit < 0:
                 print profit
                 print trade
@@ -67,7 +67,7 @@ class Trader:
                 sys.exit()
 
         if verbose:
-                print('%s profit=%d balance=%d profit/time=%d' % (outstr, profit, self.balance, self.profitpertime))
+                print('%s %s profit=%d balance=%d profit/time=%f' % (outstr, self.ttype, profit, self.balance, self.profitpertime))
         self.del_order(order)  # delete the order
 
     # specify how trader responds to events in the market
