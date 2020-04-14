@@ -7,3 +7,4 @@
 /Data/.DS_Store
 /Models/.DS_Store
 *.pyc
+*.pkl

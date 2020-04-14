@@ -1,10 +1,42 @@
 import csv
 import sys
 import numpy as np
+import pickle
+from progress.bar import IncrementalBar as Bar
 
 # read the data from CSV file  
 # d_type 
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
+
+
+class SlowBar(Bar):
+    suffix = '%(index)d/%(max)d, %(percent).1f%%, %(remaining_hours)d hours remaining'
+
+    @property
+    def remaining_hours(self):
+        return self.eta // 3600
+
+
+
+def pickle_files(pkl_path, no_files):
+    
+    file_list = []
+    bar = SlowBar('Pickling Data', max=no_files)
+    # retrieving data from multiple files
+    for i in range(no_files):
+        filename = f"./Data/Training/trial{(i+1):07}.csv"
+        file_list.append(read_all_data(filename))
+        bar.next()
+    bar.finish()
+    
+    with open(pkl_path, "wb") as fileobj:
+        pickle.dump(file_list, fileobj)
+
+
+    
+        
+       
+
 
 
 def normalize_data(x, max=0, min=0, train=True):
@@ -139,7 +171,7 @@ def read_all_data(filename):
             data["SPR"] = np.append(data["SPR"], float(row[6]))
             data["BID"] = np.append(data["BID"], float(row[7]))
             data["ASK"] = np.append(data["ASK"], float(row[8]))
-            data["DT"] = np.append(data["ASK"], float(row[9]))
+            data["DT"] = np.append(data["DT"], float(row[9]))
 
             
             # data["TIME"] = np.append(data["TIME"], float(row[0]))
@@ -159,8 +191,7 @@ def read_all_data(filename):
 
         # for dataset in data:
         #     data[dataset] = normalize_data2(data[dataset])
-
-                    
+    
     temp = np.array([])
     temp = np.column_stack([data[d] for d in data])
   
@@ -362,4 +393,8 @@ def collect_time_series_results(file_no):
     return market_data, trader_data
 
 if __name__ == "__main__":
-    collect_time_series_results(1)
+    pkl_path = "./Data/Training/Train_Dataset.pkl"
+    # pickle_files(pkl_path, 12250)
+    dataset = pickle.load(pkl_path)
+    print(dataset)
+   
