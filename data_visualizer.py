@@ -54,7 +54,7 @@ def relationships():
     file = f"./Data/Training/trial{(n):04}.csv"
     data = data_handler.read_all_data(file)
    
-    corr = np.corrcoef([data[:][d] for d in range(data.shape[1]) ])
+    corr = np.corrcoef([data[:][d] for d in range(data.shape[1])])
     sns.heatmap(corr)
     plt.show()
 
