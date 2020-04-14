@@ -24,7 +24,7 @@ class Vanilla_LSTM(NeuralNetwork):
         self.input_shape = input_shape
         self.model = Sequential()
         self.steps = input_shape[0]
-        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
+        self.model.add(LSTM(50, activation='relu', input_shape=input_shape))
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', metrics=['accuracy'], loss='mae')
         self.n_features = self.input_shape[1]
@@ -177,8 +177,8 @@ if __name__ == '__main__':
     # multivariate LSTM
     no_features = 9
     no_steps = 1
-    no_files = 10
-    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_3")
+    no_files = 12250
+    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_4")
     mv.run_all()
 
 

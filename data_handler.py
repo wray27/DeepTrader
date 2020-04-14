@@ -68,7 +68,7 @@ def read_data2(filename, d_type):
             elif d_type == "ASK":
                 data = np.append(data, float(row[6]))
             elif d_type == "TAR":
-                data = np.append(data, float(row[9]))
+                data = np.append(data, float(row[10]))
             elif d_type == "OCC":
                 data = np.append(data, float(row[8]))
             elif d_type == "DT":
@@ -102,7 +102,7 @@ def read_data3(filename, d_type):
             elif d_type == "ASK":
                 data = np.append(data, float(row[6]))
             elif d_type == "TAR":
-                data = np.append(data, float(row[9]))
+                data = np.append(data, float(row[10]))
             else:
                 data = np.append(data, float(row[0]))
 
@@ -123,9 +123,9 @@ def read_all_data(filename):
         data["SPR"] = np.array([])
         data["BID"] = np.array([])
         data["ASK"] = np.array([])
+        data["DT"] = np.array([])
         # data["TAR"] = np.array([])
         # data["OCC"] = np.array([])
-        # data["DT"] = np.array([])
         # data["WMA"] = np.array([])
 
         for row in f_data:
@@ -139,6 +139,8 @@ def read_all_data(filename):
             data["SPR"] = np.append(data["SPR"], float(row[6]))
             data["BID"] = np.append(data["BID"], float(row[7]))
             data["ASK"] = np.append(data["ASK"], float(row[8]))
+            data["DT"] = np.append(data["ASK"], float(row[9]))
+
             
             # data["TIME"] = np.append(data["TIME"], float(row[0]))
             # data["TYP"] = np.append(data["TYP"], float(row[1]))
@@ -171,7 +173,7 @@ def read_data_from_multiple_files(no_files, no_features):
     
     # retrieving data from multiple files
     for i in range(no_files):
-        filename = f"./Data/Training/trial{(i+1):04}.csv"
+        filename = f"./Data/Training/trial{(i+1):07}.csv"
         data = read_all_data(filename)
         transaction_prices = read_data3(filename, "TAR")
         X = np.append(X, data)
@@ -321,7 +323,7 @@ def split_train_test_data(data, ratio):
 
     return A, B
 
-def collect_results(file_no):
+def collect_time_series_results(file_no):
     market_data = {}
     market_data["TIME"] = np.array([])
     market_data["ASK"] = np.array([])
@@ -329,7 +331,7 @@ def collect_results(file_no):
 
     trader_data = {}
     session_id = ""
-    filename = f"./Data/Results/avg_balance{(file_no):04}.csv"
+    filename = f"./Data/Results/avg_balance{(file_no):07}.csv"
     
     with open(filename, "r") as f:
         f_data = list(csv.reader(f))
@@ -360,4 +362,4 @@ def collect_results(file_no):
     return market_data, trader_data
 
 if __name__ == "__main__":
-    collect_results(1)
+    collect_time_series_results(1)
