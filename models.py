@@ -126,20 +126,21 @@ class MultiVanilla_LSTM(NeuralNetwork):
 
 
 class Multivariate_LSTM(NeuralNetwork):
-    def __init__(self, no_files, input_shape, filename):
+    def __init__(self,  input_shape, filename):
         
         # setup
         self.input_shape = input_shape
         self.model = Sequential()
-        self.steps = input_shape[0]
-        self.n_features = self.input_shape[1]
+        self.steps = input_shape[1]
+        self.n_features = self.input_shape[2]
         self.filename = filename
-        self.no_files = no_files
+        self.batch_size = input_shape[0]
+        
         # self.max_vals = np.array([])
         # self.min_vals = np.array([])
 
         # architecture
-        self.model.add(LSTM(8, activation='relu', input_shape=input_shape))
+        self.model.add(LSTM(50, activation='relu', input_shape=(input_shape[2], input_shape[1])))
         # self.model.add(Dropout(0.5))
         self.model.add(Dense(1))
 
@@ -149,13 +150,20 @@ class Multivariate_LSTM(NeuralNetwork):
         
         
     def run_all(self):
-        
-        # retrieveing data
-        X, Y, test_X, test_Y, self.max_vals, self.min_vals = data_handler.get_data(self.no_files, self.n_features)
+        pkl_path = "./Data/Training/Train_Dataset.pkl"
+        train_data = data_handler.DataGenerator(
+            pkl_path, self.batch_size, self.n_features)
+       
+        print(train_data.train_max, train_data.train_min)
 
+        # retrieveing data
+        # X, Y, test_X, test_Y, self.max_vals, self.min_vals = data_handler.get_data(self.no_files, self.n_features)
+        self.model.fit_generator(train_data, epochs=20, verbose=1, workers=4)
+
+        
         # training and testing followed by saving the network
-        self.train(X, Y, epochs=200)
-        self.test(test_X, test_Y)
+        # self.train(X, Y, epochs=200)
+        # self.test(test_X, test_Y)
         # self.train(test_X, test_Y, epochs=1)
         self.save()
 
@@ -175,10 +183,10 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    no_features = 9
+    batch_size = 32
+    no_features = 10
     no_steps = 1
-    no_files = 12250
-    mv = Multivariate_LSTM(no_files, (no_steps, no_features), f"DeepTrader1_4")
+    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_4")
     mv.run_all()
 
 

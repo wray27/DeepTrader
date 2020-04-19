@@ -3,15 +3,69 @@ import sys
 import numpy as np
 import pickle
 from progress.bar import IncrementalBar as Bar
+from keras.utils import Sequence
 
 # read the data from CSV file  
 # d_type 
 # MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
 
 
+def normalize_data(x, max=0, min=0, train=True):
+    if train:
+        max = np.max(x)
+        min = np.min(x)
+
+    normalized = (x-min)/(max-min)
+    return normalized
+
+
+
+
+
+class DataGenerator(Sequence):
+    def __init__(self, dataset_path, batch_size, n_features):
+        self.dataset = pickle.load(open(dataset_path, 'rb'))
+        self.dataset = [s for sublist in self.dataset for s in sublist]
+        self.batch_size = batch_size
+        self.n_features = n_features
+        self.dataset = np.reshape(np.array(self.dataset), (-1,self.n_features+1))
+        self.no_items = self.dataset.shape[0]
+        print(np.array(self.dataset).shape)
+        self.train_max = np.empty((n_features+1))
+        self.train_min = np.empty((n_features+1))
+        
+        # normalizing data
+        # note: treating the test set the same way as the training set
+        for c in range(self.n_features + 1):
+            # normalizing each feature using the only the training data to scale
+            self.train_max[c]= np.max(self.dataset[:,c])
+            self.train_min[c]= np.min(self.dataset[:,c])
+            self.dataset[:,c] = normalize_data(self.dataset[:,c], max=self.train_max[c], min=self.train_min[c], train=False)
+        
+       
+    def __getitem__(self, index):  
+        # Generate indexes of the batch
+        indexes = [x for x in range(index*self.batch_size, (index+1)*self.batch_size)]
+        x = np.empty((self.batch_size, self.n_features, 1))
+        y = np.empty((self.batch_size, 1))
+        
+        for i in range(len(indexes)):
+            item = self.dataset[indexes[i]]
+            x[i,] = np.reshape(item[:10], (-1,1))
+            y[i,] = np.reshape(item[10], (1,1))
+        
+        
+        return (x,y)
+
+
+    def __len__(self):
+        # print((self.no_items // self.batch_size))
+        return (self.no_items // self.batch_size)
+
+
+
 class SlowBar(Bar):
     suffix = '%(index)d/%(max)d, %(percent).1f%%, %(remaining_hours)d hours remaining'
-
     @property
     def remaining_hours(self):
         return self.eta // 3600
@@ -33,19 +87,7 @@ def pickle_files(pkl_path, no_files):
         pickle.dump(file_list, fileobj)
 
 
-    
-        
-       
 
-
-
-def normalize_data(x, max=0, min=0, train=True):
-    if train:
-        max = np.max(x)
-        min = np.min(x)
-
-    normalized = (x-min)/(max-min)
-    return normalized
 
 
 def normalize_data2(x):
@@ -156,7 +198,7 @@ def read_all_data(filename):
         data["BID"] = np.array([])
         data["ASK"] = np.array([])
         data["DT"] = np.array([])
-        # data["TAR"] = np.array([])
+        data["TAR"] = np.array([])
         # data["OCC"] = np.array([])
         # data["WMA"] = np.array([])
 
@@ -184,7 +226,7 @@ def read_all_data(filename):
             # data["BID"] = np.append(data["BID"], float(row[6]))
             # data["ASK"] = np.append(data["ASK"], float(row[7]))
 
-            # data["TAR"] = np.append(data["TAR"], float(row[7]))
+            data["TAR"] = np.append(data["TAR"], float(row[10]))
             # data["OCC"] = np.array(data["OCC"], float(row[8]))
             # data["DT"] = np.append(data["DT"], float(row[9]))
             # data["WMA"] = np.append(data["WMA"], float(row[10]))
@@ -362,7 +404,7 @@ def collect_time_series_results(file_no):
 
     trader_data = {}
     session_id = ""
-    filename = f"./Data/Results/avg_balance{(file_no):07}.csv"
+    filename = f"./Data/Results/avg_balance{(file_no):04}.csv"
     
     with open(filename, "r") as f:
         f_data = list(csv.reader(f))
@@ -393,8 +435,8 @@ def collect_time_series_results(file_no):
     return market_data, trader_data
 
 if __name__ == "__main__":
+   
     pkl_path = "./Data/Training/Train_Dataset.pkl"
     # pickle_files(pkl_path, 12250)
-    dataset = pickle.load(pkl_path)
-    print(dataset)
-   
+    train_data = DataGenerator(pkl_path)
+    # print(train_data.__getitem__(0))

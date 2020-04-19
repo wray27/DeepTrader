@@ -60,7 +60,7 @@ def relationships():
 
 def profit_time(number):
 
-    market_data, trader_data = data_handler.collect_results(number)
+    market_data, trader_data = data_handler.collect_time_series_results(number)
     # mpl.style.use('seaborn')
 
     for t in trader_data.keys():
@@ -76,9 +76,9 @@ def profit_time(number):
 
 def main():
    
-    relationships()
-    # for i in range(1,11):
-    #     profit_time(i)
+    # relationships()
+    for i in range(1,11):
+        profit_time(i)
 
 
 
