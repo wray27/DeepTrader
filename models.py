@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.optimizers import SGD
 from keras.regularizers import l2
 import data_handler
-import data_visualizer
+# import data_visualizer
 from NeuralNetwork import NeuralNetwork
 
 # Univariate LSTM used to predict a single next step in time series data
@@ -73,7 +73,7 @@ class Vanilla_LSTM(NeuralNetwork):
         X, y = data_handler.split_data(prices, self.steps)
         self.test(X, y, verbose=1)
 
-
+# Univariate LSTM that takes in multiple steps to to predict a single next step in time series data
 class MultiVanilla_LSTM(NeuralNetwork):
     def __init__(self, input_shape, out_steps, filename):
         # inputs: A 3D tensor with shape[batch, timesteps, feature].
@@ -124,7 +124,6 @@ class MultiVanilla_LSTM(NeuralNetwork):
         self.test(test_X, test_y, verbose=1)
         self.save()
 
-
 class Multivariate_LSTM(NeuralNetwork):
     def __init__(self,  input_shape, filename):
         
@@ -149,22 +148,16 @@ class Multivariate_LSTM(NeuralNetwork):
         self.model.compile(optimizer=opt, metrics=['mae','msle','mse'], loss='mse')
         
         
-    def run_all(self):
+    def create_model(self):
         pkl_path = "./Data/Training/Train_Dataset.pkl"
         train_data = data_handler.DataGenerator(
             pkl_path, self.batch_size, self.n_features)
        
-        print(train_data.train_max, train_data.train_min)
+        self.max_vals = train_data.train_max
+        self.min_vals = train_data.train_min
 
-        # retrieveing data
-        # X, Y, test_X, test_Y, self.max_vals, self.min_vals = data_handler.get_data(self.no_files, self.n_features)
         self.model.fit_generator(train_data, epochs=20, verbose=1, workers=4)
 
-        
-        # training and testing followed by saving the network
-        # self.train(X, Y, epochs=200)
-        # self.test(test_X, test_Y)
-        # self.train(test_X, test_Y, epochs=1)
         self.save()
 
 
@@ -187,7 +180,7 @@ if __name__ == '__main__':
     no_features = 10
     no_steps = 1
     mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_4")
-    mv.run_all()
+    mv.create_model()
 
 
 

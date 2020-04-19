@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import data_handler
-import seaborn as sns
+# import seaborn as sns
 from scipy.stats import skew
 import matplotlib as mpl
 
