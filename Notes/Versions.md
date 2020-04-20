@@ -18,3 +18,11 @@
     * ZIP, ZIC, GVWY, AA, GDX, SHVR, SNPR
 * 80 traders - 40 buyers 40 sellers
 * 12250 market sessions in total
+
+## DeepTrader1.5
+
+* added more metrics from the LOB, such as:
+    * Smith's alpha
+    * total number of orders
+* still trades using limit prices
+* supply and demand schedules have now been randomized to mimc the real world

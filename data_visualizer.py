@@ -73,12 +73,29 @@ def profit_time(number):
     plt.legend()
     plt.show()
 
+def placement():
+    results = [0, 0, 0, 0]
+    for i in range(1, 51):
+        data = data_handler.get_end_results(i)
+        ppt = []
+        
+        for d in data:
+            ppt = ppt.append(data[d]["PPT"])
+        
+        ppt = sort(ppt)
+
+        for i in range(len(ppt)):
+            if data["DTR"]["PPT"] == ppt[i]: results[i] += 1
+    
+    print(results)
 
 def main():
    
     # relationships()
-    for i in range(1,11):
-        profit_time(i)
+    # for i in range(1,11):
+    #     profit_time(i)
+    placement()
+    
 
 
 

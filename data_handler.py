@@ -364,7 +364,7 @@ def collect_time_series_results(file_no):
 
     trader_data = {}
     session_id = ""
-    filename = f"./Data/Results/avg_balance{(file_no):04}.csv"
+    filename = f"./BristolStockExchange/avg_balance{(file_no):04d}.csv"
     
     with open(filename, "r") as f:
         f_data = list(csv.reader(f))
@@ -393,6 +393,23 @@ def collect_time_series_results(file_no):
                 trader_data[trader]["PPT"] = np.append(trader_data[trader]["PPT"], float(str(row[(i*no_traders)+5]).strip()))
 
     return market_data, trader_data
+
+
+def get_end_results(file_no):
+
+    with open(f"./BristolStockExchange/avg_balance{(file_no):04d}.csv", 'r') as f:
+        lines = f.read().splitlines()
+        last_line = lines[-1]
+    
+    no_traders = int((len(last_line) - 5) / 4)
+    for i in range(no_traders):
+        trader = str(last_line[(i*no_traders) + 2]).strip()
+        trader_data[trader] = {}
+        trader_data[trader]["Balance"] =  float(str(last_line[(i*no_traders + 3)]).strip())
+        trader_data[trader]["n"] = int(str(last_line[(i*no_traders) + 4]).strip())
+        trader_data[trader]["PPT"] = float(str(last_line[(i*no_traders + 5)]).strip())
+
+    return trader_data
 
 if __name__ == "__main__":
    
