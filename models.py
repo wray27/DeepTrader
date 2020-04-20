@@ -149,20 +149,18 @@ class Multivariate_LSTM(NeuralNetwork):
         
         
     def create_model(self):
-        pkl_path = "./Data/Training/Train_Dataset.pkl"
+        pkl_path = "./Train_Dataset2.pkl"
         train_data = data_handler.DataGenerator(
             pkl_path, self.batch_size, self.n_features)
-       
         self.max_vals = train_data.train_max
         self.min_vals = train_data.train_min
-
-        self.model.fit_generator(train_data, epochs=20, verbose=1, workers=4)
-
+        self.model.fit_generator(train_data, epochs=20, verbose=1, workers=16)
         self.save()
 
 
 if __name__ == '__main__':
     np.set_printoptions(threshold=sys.maxsize)
+    print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
     # single step vanilla LSTM
     # steps = 9
@@ -176,10 +174,10 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    batch_size = 32
-    no_features = 10
+    batch_size = 128
+    no_features = 12
     no_steps = 1
-    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_4")
+    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_5")
     mv.create_model()
 
 

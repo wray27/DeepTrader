@@ -2,13 +2,8 @@ import csv
 import sys
 import numpy as np
 import pickle
-from progress.bar import IncrementalBar as Bar
+# from progress.bar import IncrementalBar as Bar
 from keras.utils import Sequence
-
-# read the data from CSV file  
-# d_type 
-# MID - mid prices, MIC - micro price, IMB - imbalances, SPR - spread
-
 
 def normalize_data(x, max=0, min=0, train=True):
     if train:
@@ -17,9 +12,6 @@ def normalize_data(x, max=0, min=0, train=True):
 
     normalized = (x-min)/(max-min)
     return normalized
-
-
-
 
 
 class DataGenerator(Sequence):
@@ -31,8 +23,8 @@ class DataGenerator(Sequence):
         self.dataset = np.reshape(np.array(self.dataset), (-1,self.n_features+1))
         self.no_items = self.dataset.shape[0]
         print(np.array(self.dataset).shape)
-        self.train_max = np.empty((n_features+1))
-        self.train_min = np.empty((n_features+1))
+        self.train_max = np.empty((self.n_features+1))
+        self.train_min = np.empty((self.n_features+1))
         
         # normalizing data
         # note: treating the test set the same way as the training set
@@ -51,8 +43,8 @@ class DataGenerator(Sequence):
         
         for i in range(len(indexes)):
             item = self.dataset[indexes[i]]
-            x[i,] = np.reshape(item[:10], (-1,1))
-            y[i,] = np.reshape(item[10], (1,1))
+            x[i, ] = np.reshape(item[:self.n_features], (-1, 1))
+            y[i, ] = np.reshape(item[self.n_features], (1, 1))
         
         
         return (x,y)
@@ -64,40 +56,36 @@ class DataGenerator(Sequence):
 
 
 
-class SlowBar(Bar):
-    suffix = '%(index)d/%(max)d, %(percent).1f%%, %(remaining_hours)d hours remaining'
-    @property
-    def remaining_hours(self):
-        return self.eta // 3600
+# class SlowBar(Bar):
+#     suffix = '%(index)d/%(max)d, %(percent).1f%%, %(remaining_hours)d hours remaining'
+#     @property
+#     def remaining_hours(self):
+#         return self.eta // 3600
 
 
 
-def pickle_files(pkl_path, no_files):
+# def pickle_files(pkl_path, no_files):
     
-    file_list = []
-    bar = SlowBar('Pickling Data', max=no_files)
-    # retrieving data from multiple files
-    for i in range(no_files):
-        filename = f"./Data/Training/trial{(i+1):07}.csv"
-        file_list.append(read_all_data(filename))
-        bar.next()
-    bar.finish()
+#     file_list = []
+#     bar = SlowBar('Pickling Data', max=no_files)
+#     # retrieving data from multiple files
+#     for i in range(no_files):
+#         filename = f"trial{(i+1):06d}.csv"
+#         file_list.append(read_all_data(filename))
+#         bar.next()
+#     bar.finish()
     
-    with open(pkl_path, "wb") as fileobj:
-        pickle.dump(file_list, fileobj)
-
-
-
-
+#     with open(pkl_path, "wb") as fileobj:
+#         pickle.dump(file_list, fileobj)
 
 def normalize_data2(x):
     normalized = (2*(x-np.min(x))/(np.max(x)-np.min(x))) - 1
     return normalized
-
 def standardize_data(x):
     standardized = (x - np.mean(x)) / np.std(x)
     return standardized
 
+# obselete functions
 def read_data(filename, d_type):
     data = np.array([])
 
@@ -119,8 +107,6 @@ def read_data(filename, d_type):
                 data = np.append(data, float(row[0]))
 
     return data
-
-
 def read_data2(filename, d_type):
     data = np.array([])
 
@@ -153,8 +139,6 @@ def read_data2(filename, d_type):
     data = normalize_data(data)
 
     return data
-
-
 def read_data3(filename, d_type):
     data = np.array([])
 
@@ -182,7 +166,6 @@ def read_data3(filename, d_type):
 
     return data
 
-
 def read_all_data(filename):
     data = {}
     
@@ -199,41 +182,22 @@ def read_all_data(filename):
         data["ASK"] = np.array([])
         data["DT"] = np.array([])
         data["TAR"] = np.array([])
-        # data["OCC"] = np.array([])
-        # data["WMA"] = np.array([])
-
+       
         for row in f_data:
-            # print(row)
             data["TIME"] = np.append(data["TIME"],float(row[0]))
             data["TYP"] = np.append(data["TYP"], float(row[1]))
             data["LIM"] = np.append(data["LIM"], float(row[2]))
-            data["MID"] = np.append(data["MID"],float(row[3]))
+            data["MID"] = np.append(data["MID"], float(row[3]))
             data["MIC"] = np.append(data["MIC"], float(row[4]))
-            data["IMB"] = np.append(data["IMB"],float(row[5]))
+            data["IMB"] = np.append(data["IMB"], float(row[5]))
             data["SPR"] = np.append(data["SPR"], float(row[6]))
             data["BID"] = np.append(data["BID"], float(row[7]))
             data["ASK"] = np.append(data["ASK"], float(row[8]))
-            data["DT"] = np.append(data["DT"], float(row[9]))
-
-            
-            # data["TIME"] = np.append(data["TIME"], float(row[0]))
-            # data["TYP"] = np.append(data["TYP"], float(row[1]))
-            # data["LIM"] = np.append(data["LIM"], float(row[1]))
-            # data["MID"] = np.append(data["MID"], float(row[2]))
-            # data["MIC"] = np.append(data["MIC"], float(row[3]))
-            # data["IMB"] = np.append(data["IMB"], float(row[4]))
-            # data["SPR"] = np.append(data["SPR"], float(row[5]))
-            # data["BID"] = np.append(data["BID"], float(row[6]))
-            # data["ASK"] = np.append(data["ASK"], float(row[7]))
-
-            data["TAR"] = np.append(data["TAR"], float(row[10]))
-            # data["OCC"] = np.array(data["OCC"], float(row[8]))
-            # data["DT"] = np.append(data["DT"], float(row[9]))
-            # data["WMA"] = np.append(data["WMA"], float(row[10]))
-
-        # for dataset in data:
-        #     data[dataset] = normalize_data2(data[dataset])
-    
+            data["DT"]  = np.append(data["DT"],  float(row[9]))
+            data["TOT"] = np.append(data["TOT"], float(row[10]))
+            data["ALP"] = np.append(data["ALP"], float(row[11]))
+            data["TAR"] = np.append(data["TAR"], float(row[12]))
+     
     temp = np.array([])
     temp = np.column_stack([data[d] for d in data])
   
@@ -274,7 +238,7 @@ def normalization_values(X, Y, no_features):
 
     return train_max, train_min
 
-
+# obselete function
 def get_data(no_files, no_features):
 
     # obtaining data
@@ -318,9 +282,6 @@ def get_data(no_files, no_features):
     test_Y = np.reshape(test_Y, (-1, 1))
 
     return train_X, train_Y, test_X, test_Y, train_max, train_min
-
-
-
 
 # splitting data into input and output signal
 # n_steps is the number of steps taken until a split occurs will have to formalize this with time steps
@@ -395,7 +356,6 @@ def split_train_test_data(data, ratio):
     B = np.append(B, data[split_index:])
 
     return A, B
-
 def collect_time_series_results(file_no):
     market_data = {}
     market_data["TIME"] = np.array([])
@@ -436,7 +396,7 @@ def collect_time_series_results(file_no):
 
 if __name__ == "__main__":
    
-    pkl_path = "./Data/Training/Train_Dataset.pkl"
-    # pickle_files(pkl_path, 12250)
+    pkl_path = "./Train_Dataset2.pkl"
+    # pickle_files(pkl_path, )
     train_data = DataGenerator(pkl_path)
-    # print(train_data.__getitem__(0))
+    
