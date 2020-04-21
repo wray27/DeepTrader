@@ -27,7 +27,7 @@ class DataGenerator(Sequence):
         self.train_min = np.empty((self.n_features+1))
         
         # normalizing data
-        # note: treating the test set the same way as the training set
+        # note: treating the test set the same way as the training sets
         for c in range(self.n_features + 1):
             # normalizing each feature using the only the training data to scale
             self.train_max[c]= np.max(self.dataset[:,c])
@@ -38,12 +38,12 @@ class DataGenerator(Sequence):
     def __getitem__(self, index):  
         # Generate indexes of the batch
         indexes = [x for x in range(index*self.batch_size, (index+1)*self.batch_size)]
-        x = np.empty((self.batch_size, self.n_features, 1))
+        x = np.empty((self.batch_size, 1, self.n_features))
         y = np.empty((self.batch_size, 1))
         
         for i in range(len(indexes)):
             item = self.dataset[indexes[i]]
-            x[i, ] = np.reshape(item[:self.n_features], (-1, 1))
+            x[i, ] = np.reshape(item[:self.n_features], (1,-1))
             y[i, ] = np.reshape(item[self.n_features], (1, 1))
         
         
@@ -398,15 +398,18 @@ def collect_time_series_results(file_no):
 def get_end_results(file_no):
 
     with open(f"./BristolStockExchange/avg_balance{(file_no):04d}.csv", 'r') as f:
-        lines = f.read().splitlines()
+        lines = list(csv.reader(f))
         last_line = lines[-1]
+        # print(last_line)
+        trader_data = {}
     
     no_traders = int((len(last_line) - 5) / 4)
     for i in range(no_traders):
         trader = str(last_line[(i*no_traders) + 2]).strip()
+        print(trader)
         trader_data[trader] = {}
-        trader_data[trader]["Balance"] =  float(str(last_line[(i*no_traders + 3)]).strip())
-        trader_data[trader]["n"] = int(str(last_line[(i*no_traders) + 4]).strip())
+        # trader_data[trader]["Balance"] =  float(str(last_line[(i*no_traders + 3)]).strip())
+        # trader_data[trader]["n"] = int(str(last_line[(i*no_traders) + 4]).strip())
         trader_data[trader]["PPT"] = float(str(last_line[(i*no_traders + 5)]).strip())
 
     return trader_data

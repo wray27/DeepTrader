@@ -75,19 +75,22 @@ def profit_time(number):
 
 def placement():
     results = [0, 0, 0, 0]
-    for i in range(1, 51):
+    for i in range(1, 36):
         data = data_handler.get_end_results(i)
         ppt = []
         
         for d in data:
-            ppt = ppt.append(data[d]["PPT"])
+            ppt.append(data[d]["PPT"])
         
-        ppt = sort(ppt)
+        ppt = sorted(ppt, reverse=True)
 
         for i in range(len(ppt)):
             if data["DTR"]["PPT"] == ppt[i]: results[i] += 1
     
-    print(results)
+    pos =["1st","2nd", "3rd", "4th"]
+    for i in range(len(pos)):
+        print(f"{pos[i]}: {results[i]}")
+  
 
 def main():
    

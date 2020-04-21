@@ -139,7 +139,7 @@ class Multivariate_LSTM(NeuralNetwork):
         # self.min_vals = np.array([])
 
         # architecture
-        self.model.add(LSTM(50, activation='relu', input_shape=(input_shape[2], input_shape[1])))
+        self.model.add(LSTM(50, activation='relu', input_shape=(input_shape[1], input_shape[2])))
         # self.model.add(Dropout(0.5))
         self.model.add(Dense(1))
 
@@ -160,7 +160,7 @@ class Multivariate_LSTM(NeuralNetwork):
 
 if __name__ == '__main__':
     np.set_printoptions(threshold=sys.maxsize)
-    print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+    # print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
     # single step vanilla LSTM
     # steps = 9
