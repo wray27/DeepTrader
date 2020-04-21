@@ -174,10 +174,10 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    batch_size = 128
+    batch_size = 256
     no_features = 12
     no_steps = 1
-    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_5")
+    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_5_1")
     mv.create_model()
 
 
