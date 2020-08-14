@@ -1,0 +1,570 @@
+% The document class supplies options to control rendering of some standard
+% features in the result.  The goal is for uniform style, so some attention 
+% to detail is *vital* with all fields.  Each field (i.e., text inside the
+% curly braces below, so the MEng text inside {MEng} for instance) should 
+% take into account the following:
+%
+% - author name       should be formatted as "FirstName LastName"
+%   (not "Initial LastName" for example),
+% - supervisor name   should be formatted as "Title FirstName LastName"
+%   (where Title is "Dr." or "Prof." for example),
+% - degree programme  should be "BSc", "MEng", "MSci", "MSc" or "PhD",
+% - dissertation title should be correctly capitalised (plus you can have
+%   an optional sub-title if appropriate, or leave this field blank),
+% - dissertation type should be formatted as one of the following:
+%   * for the MEng degree programme either "enterprise" or "research" to
+%     reflect the stream,
+%   * for the MSc  degree programme "$X/Y/Z$" for a project deemed to be
+%     X%, Y% and Z% of type I, II and III.
+% - year              should be formatted as a 4-digit year of submission
+%   (so 2014 rather than the accademic year, say 2013/14 say).
+
+\documentclass[ % the name of the author
+                    author={Daniel Page},
+                % the name of the supervisor
+                supervisor={Dr. Andrew Calway},
+                % the degree programme
+                    degree={MEng},
+                % the dissertation    title (which cannot be blank)
+                     title={Some Structural Guidelines for CS MEng Dissertations},
+                % the dissertation subtitle (which can    be blank)
+                  subtitle={},
+                % the dissertation     type
+                      type={enterprise},
+                % the year of submission
+                      year={2014} ]{dissertation}
+
+\begin{document}
+
+% =============================================================================
+
+% This section simply introduces the structural guidelines.  It can clearly
+% be deleted (or commented out) if you use the file as a template for your
+% own dissertation: everything following it is in the correct order to use 
+% as is.
+
+\section*{Prelude}
+\thispagestyle{empty}
+
+A typical dissertation will be structured according to (somewhat) standard 
+sections, described in what follows.  However, it is hard and perhaps even 
+counter-productive to generalise: the goal is {\em not} to be prescriptive, 
+but simply to act as a guideline.  In particular, each page count given is
+important but {\em not} absolute: their aim is simply to highlight that a 
+clear, concise description is better than a rambling alternative that makes
+it hard to separate important content and facts from trivia.
+
+You can use this document as a \LaTeX-based~\cite{latexbook1,latexbook2} 
+template for your own dissertation by simply deleting extraneous sections
+and content; keep in mind that the associated {\tt Makefile} could be of
+use, in particular because it automatically executes \mbox{\BibTeX} to 
+deal with the associated bibliography. Alternatively, you might want to upload the entire zip folder onto Overleaf (online collaborative \LaTeX platform)
+
+
+
+% =============================================================================
+
+% This macro creates the standard UoB title page by using information drawn
+% from the document class (meaning it is vital you select the correct degree 
+% title and so on).
+
+\maketitle
+
+% After the title page (which is a special case in that it is not numbered)
+% comes the front matter or preliminaries; this macro signals the start of
+% such content, meaning the pages are numbered with Roman numerals.
+
+\frontmatter
+
+% This macro creates the standard UoB declaration; on the printed hard-copy,
+% this must be physically signed by the author in the space indicated.
+
+\makedecl
+
+% LaTeX automatically generates a table of contents, plus associated lists 
+% of figures, tables and algorithms.  The former is a compulsory part of the
+% dissertation, but if you do not require the latter they can be suppressed
+% by simply commenting out the associated macro.
+
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+\lstlistoflistings
+
+% The following sections are part of the front matter, but are not generated
+% automatically by LaTeX; the use of \chapter* means they are not numbered.
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Executive Summary}
+
+{\bf A compulsory section, of at most $1$ page} 
+\vspace{1cm} 
+
+\noindent
+This section should pr\'{e}cis the project context, aims and objectives,
+and main contributions (e.g., deliverables) and achievements; the same 
+section may be called an abstract elsewhere.  The goal is to ensure the 
+reader is clear about what the topic is, what you have done within this 
+topic, {\em and} what your view of the outcome is.
+
+The former aspects should be guided by your specification: essentially 
+this section is a (very) short version of what is typically the first 
+chapter.  Note that for research-type projects, this {\bf must} include 
+a clear research hypothesis.  This will obviously differ significantly
+for each project, but an example might be as follows:
+
+\begin{quote}
+My research hypothesis is that a suitable genetic algorithm will yield
+more accurate results (when applied to the standard ACME data set) than 
+the algorithm proposed by Jones and Smith, while also executing in less
+time.
+\end{quote}
+
+\noindent
+The latter aspects should (ideally) be presented as a concise, factual 
+bullet point list.  Again the points will differ for each project, but 
+an might be as follows:
+
+\begin{quote}
+\noindent
+\begin{itemize}
+\item I spent $120$ hours collecting material on and learning about the 
+      Java garbage-collection sub-system. 
+\item I wrote a total of $5000$ lines of source code, comprising a Linux 
+      device driver for a robot (in C) and a GUI (in Java) that is 
+      used to control it.
+\item I designed a new algorithm for computing the non-linear mapping 
+      from A-space to B-space using a genetic algorithm, see page $17$.
+\item I implemented a version of the algorithm proposed by Jones and 
+      Smith in [6], see page $12$, corrected a mistake in it, and 
+      compared the results with several alternatives.
+\end{itemize}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Summary of Changes}
+
+{\bf A conditional section, of at most $1$ page} 
+\vspace{1cm} 
+
+Iff. the dissertation represents a resubmission (e.g., as the result of
+a resit), this section is compulsory: the content should summarise all
+non-trivial changes made to the initial submission.  Otherwise you can
+omit it, since a summary of this type is clearly nonsensical.
+
+When included, the section will ideally be used to highlight additional
+work completed, and address criticism raised in any associated feedback.
+Clearly it is difficult to give generic advice about how to do so, but
+an example might be as follows:
+
+\begin{quote}
+\noindent
+\begin{itemize}
+\item Feedback from the initial submission criticised the design and 
+      implementation of my genetic algorithm, stating ``there seems 
+      to have been no attention to computational complexity during the
+      design, and obvious methods of optimisation are missing within
+      the resulting implementation''.  Chapter $3$ now includes a
+      comprehensive analysis of the algorithm, in terms of both time
+      and space.  While I have not altered the algorithm itself, I
+      have included a cache mechanism (also detailed in Chapter $3$)
+      that provides a significant improvement in average run-time.
+\item I added a feature in my implementation to allow automatic rather
+      than manual selection of various parameters; the experimental
+      results in Chapter $4$ have been updated to reflect this.
+\item Questions after the presentation highlighted a range of related
+      work that I had not considered: I have make a number of updates 
+      to Chapter $2$, resolving this issue.
+\end{itemize}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Supporting Technologies}
+
+{\bf A compulsory section, of at most $1$ page}
+\vspace{1cm} 
+
+\noindent
+This section should present a detailed summary, in bullet point form, 
+of any third-party resources (e.g., hardware and software components) 
+used during the project.  Use of such resources is always perfectly 
+acceptable: the goal of this section is simply to be clear about how
+and where they are used, so that a clear assessment of your work can
+result.  The content can focus on the project topic itself (rather,
+for example, than including ``I used \mbox{\LaTeX} to prepare my 
+dissertation''); an example is as follows:
+
+\begin{quote}
+\noindent
+\begin{itemize}
+\item I used the Java {\tt BigInteger} class to support my implementation 
+      of RSA.
+\item I used a parts of the OpenCV computer vision library to capture 
+      images from a camera, and for various standard operations (e.g., 
+      threshold, edge detection).
+\item I used an FPGA device supplied by the Department, and altered it 
+      to support an open-source UART core obtained from 
+      \url{http://opencores.org/}.
+\item The web-interface component of my system was implemented by 
+      extending the open-source WordPress software available from
+      \url{http://wordpress.org/}.
+\end{itemize}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Notation and Acronyms}
+
+{\bf An optional section, of roughly $1$ or $2$ pages}
+\vspace{1cm} 
+
+\noindent
+Any well written document will introduce notation and acronyms before
+their use, {\em even if} they are standard in some way: this ensures 
+any reader can understand the resulting self-contained content.  
+
+Said introduction can exist within the dissertation itself, wherever 
+that is appropriate.  For an acronym, this is typically achieved at 
+the first point of use via ``Advanced Encryption Standard (AES)'' or 
+similar, noting the capitalisation of relevant letters.  However, it 
+can be useful to include an additional, dedicated list at the start 
+of the dissertation; the advantage of doing so is that you cannot 
+mistakenly use an acronym before defining it.  A limited example is 
+as follows:
+
+\begin{quote}
+\noindent
+\begin{tabular}{lcl}
+AES                 &:     & Advanced Encryption Standard                                         \\
+DES                 &:     & Data Encryption Standard                                             \\
+                    &\vdots&                                                                      \\
+${\mathcal H}( x )$ &:     & the Hamming weight of $x$                                            \\
+${\mathbb  F}_q$    &:     & a finite field with $q$ elements                                     \\
+$x_i$               &:     & the $i$-th bit of some binary sequence $x$, st. $x_i \in \{ 0, 1 \}$ \\
+\end{tabular}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Acknowledgements}
+
+{\bf An optional section, of at most $1$ page}
+\vspace{1cm} 
+
+\noindent
+It is common practice (although totally optional) to acknowledge any
+third-party advice, contribution or influence you have found useful
+during your work.  Examples include support from friends or family, 
+the input of your Supervisor and/or Advisor, external organisations 
+or persons who  have supplied resources of some kind (e.g., funding, 
+advice or time), and so on.
+
+% =============================================================================
+
+% After the front matter comes a number of chapters; under each chapter,
+% sections, subsections and even subsubsections are permissible.  The
+% pages in this part are numbered with Arabic numerals.  Note that:
+%
+% - A reference point can be marked using \label{XXX}, and then later
+%   referred to via \ref{XXX}; for example Chapter\ref{chap:context}.
+% - The chapters are presented here in one file; this can become hard
+%   to manage.  An alternative is to save the content in seprate files
+%   the use \input{XXX} to import it, which acts like the #include
+%   directive in C.
+
+\mainmatter
+
+% -----------------------------------------------------------------------------
+
+\chapter{Contextual Background}
+\label{chap:context}
+
+{\bf A compulsory chapter,     of roughly $5$ pages}
+\vspace{1cm} 
+
+\noindent
+This chapter should describe the project context, and motivate each of
+the proposed aims and objectives.  Ideally, it is written at a fairly 
+high-level, and easily understood by a reader who is technically 
+competent but not an expert in the topic itself.
+
+In short, the goal is to answer three questions for the reader.  First, 
+what is the project topic, or problem being investigated?  Second, why 
+is the topic important, or rather why should the reader care about it?  
+For example, why there is a need for this project (e.g., lack of similar 
+software or deficiency in existing software), who will benefit from the 
+project and in what way (e.g., end-users, or software developers) what 
+work does the project build on and why is the selected approach either
+important and/or interesting (e.g., fills a gap in literature, applies
+results from another field to a new problem).  Finally, what are the 
+central challenges involved and why are they significant? 
+ 
+The chapter should conclude with a concise bullet point list that 
+summarises the aims and objectives.  For example:
+
+\begin{quote}
+\noindent
+The high-level objective of this project is to reduce the performance 
+gap between hardware and software implementations of modular arithmetic.  
+More specifically, the concrete aims are:
+
+\begin{enumerate}
+\item Research and survey literature on public-key cryptography and
+      identify the state of the art in exponentiation algorithms.
+\item Improve the state of the art algorithm so that it can be used
+      in an effective and flexible way on constrained devices.
+\item Implement a framework for describing exponentiation algorithms
+      and populate it with suitable examples from the literature on 
+      an ARM7 platform.
+\item Use the framework to perform a study of algorithm performance
+      in terms of time and space, and show the proposed improvements
+      are worthwhile.
+\end{enumerate}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter{Technical Background}
+\label{chap:technical}
+
+{\bf A compulsory chapter,     of roughly $10$ pages} 
+\vspace{1cm} 
+
+\noindent
+This chapter is intended to describe the technical basis on which execution
+of the project depends.  The goal is to provide a detailed explanation of
+the specific problem at hand, and existing work that is relevant (e.g., an
+existing algorithm that you use, alternative solutions proposed, supporting
+technologies).  
+
+Per the same advice in the handbook, note there is a subtly difference from
+this and a full-blown literature review (or survey).  The latter might try
+to capture and organise (e.g., categorise somehow) {\em all} related work,
+potentially offering meta-analysis, whereas here the goal is simple to
+ensure the dissertation is self-contained.  Put another way, after reading 
+this chapter a non-expert reader should have obtained enough background to 
+understand what {\em you} have done (by reading subsequent sections), then 
+accurately assess your work.  You might view an additional goal as giving 
+the reader confidence that you are able to absorb, understand and clearly 
+communicate highly technical material.
+
+% -----------------------------------------------------------------------------
+
+\chapter{Project Execution}
+\label{chap:execution}
+
+{\bf A topic-specific chapter, of roughly $15$ pages} 
+\vspace{1cm} 
+
+\noindent
+This chapter is intended to describe what you did: the goal is to explain
+the main activity or activities, of any type, which constituted your work 
+during the project.  The content is highly topic-specific, but for many 
+projects it will make sense to split the chapter into two sections: one 
+will discuss the design of something (e.g., some hardware or software, or 
+an algorithm, or experiment), including any rationale or decisions made, 
+and the other will discuss how this design was realised via some form of 
+implementation.  
+
+This is, of course, far from ideal for {\em many} project topics.  Some
+situations which clearly require a different approach include:
+
+\begin{itemize}
+\item In a project where asymptotic analysis of some algorithm is the goal,
+      there is no real ``design and implementation'' in a traditional sense
+      even though the activity of analysis is clearly within the remit of
+      this chapter.
+\item In a project where analysis of some results is as major, or a more
+      major goal than the implementation that produced them, it might be
+      sensible to merge this chapter with the next one: the main activity 
+      is such that discussion of the results cannot be viewed separately.
+\end{itemize}
+
+\noindent
+Note that it is common to include evidence of ``best practice'' project 
+management (e.g., use of version control, choice of programming language 
+and so on).  Rather than simply a rote list, make sure any such content 
+is useful and/or informative in some way: for example, if there was a 
+decision to be made then explain the trade-offs and implications 
+involved.
+
+\section{Example Section}
+
+This is an example section; 
+the following content is auto-generated dummy text.
+\lipsum
+
+\subsection{Example Sub-section}
+
+\begin{figure}[t]
+\centering
+foo
+\caption{This is an example figure.}
+\label{fig}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{|cc|c|}
+\hline
+foo      & bar      & baz      \\
+\hline
+$0     $ & $0     $ & $0     $ \\
+$1     $ & $1     $ & $1     $ \\
+$\vdots$ & $\vdots$ & $\vdots$ \\
+$9     $ & $9     $ & $9     $ \\
+\hline
+\end{tabular}
+\caption{This is an example table.}
+\label{tab}
+\end{table}
+
+\begin{algorithm}[t]
+\For{$i=0$ {\bf upto} $n$}{
+  $t_i \leftarrow 0$\;
+}
+\caption{This is an example algorithm.}
+\label{alg}
+\end{algorithm}
+
+\begin{lstlisting}[float={t},caption={This is an example listing.},label={lst},language=C]
+for( i = 0; i < n; i++ ) {
+  t[ i ] = 0;
+}
+\end{lstlisting}
+
+This is an example sub-section;
+the following content is auto-generated dummy text.
+Notice the examples in Figure~\ref{fig}, Table~\ref{tab}, Algorithm~\ref{alg}
+and Listing~\ref{lst}.
+\lipsum
+
+\subsubsection{Example Sub-sub-section}
+
+This is an example sub-sub-section;
+the following content is auto-generated dummy text.
+\lipsum
+
+\paragraph{Example paragraph.}
+
+This is an example paragraph; note the trailing full-stop in the title,
+which is intended to ensure it does not run into the text.
+
+% -----------------------------------------------------------------------------
+
+\chapter{Critical Evaluation}
+\label{chap:evaluation}
+
+{\bf A topic-specific chapter, of roughly $15$ pages} 
+\vspace{1cm} 
+
+\noindent
+This chapter is intended to evaluate what you did.  The content is highly 
+topic-specific, but for many projects will have flavours of the following:
+
+\begin{enumerate}
+\item functional  testing, including analysis and explanation of failure 
+      cases,
+\item behavioural testing, often including analysis of any results that 
+      draw some form of conclusion wrt. the aims and objectives,
+      and
+\item evaluation of options and decisions within the project, and/or a
+      comparison with alternatives.
+\end{enumerate}
+
+\noindent
+This chapter often acts to differentiate project quality: even if the work
+completed is of a high technical quality, critical yet objective evaluation 
+and comparison of the outcomes is crucial.  In essence, the reader wants to
+learn something, so the worst examples amount to simple statements of fact 
+(e.g., ``graph X shows the result is Y''); the best examples are analytical 
+and exploratory (e.g., ``graph X shows the result is Y, which means Z; this 
+contradicts [1], which may be because I use a different assumption'').  As 
+such, both positive {\em and} negative outcomes are valid {\em if} presented 
+in a suitable manner.
+
+% -----------------------------------------------------------------------------
+
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+{\bf A compulsory chapter,     of roughly $5$ pages} 
+\vspace{1cm} 
+
+\noindent
+The concluding chapter of a dissertation is often underutilised because it 
+is too often left too close to the deadline: it is important to allocation
+enough attention.  Ideally, the chapter will consist of three parts:
+
+\begin{enumerate}
+\item (Re)summarise the main contributions and achievements, in essence
+      summing up the content.
+\item Clearly state the current project status (e.g., ``X is working, Y 
+      is not'') and evaluate what has been achieved with respect to the 
+      initial aims and objectives (e.g., ``I completed aim X outlined 
+      previously, the evidence for this is within Chapter Y'').  There 
+      is no problem including aims which were not completed, but it is 
+      important to evaluate and/or justify why this is the case.
+\item Outline any open problems or future plans.  Rather than treat this
+      only as an exercise in what you {\em could} have done given more 
+      time, try to focus on any unexplored options or interesting outcomes
+      (e.g., ``my experiment for X gave counter-intuitive results, this 
+      could be because Y and would form an interesting area for further 
+      study'' or ``users found feature Z of my software difficult to use,
+      which is obvious in hindsight but not during at design stage; to 
+      resolve this, I could clearly apply the technique of Smith [7]'').
+\end{enumerate}
+
+% =============================================================================
+
+% Finally, after the main matter, the back matter is specified.  This is
+% typically populated with just the bibliography.  LaTeX deals with these
+% in one of two ways, namely
+%
+% - inline, which roughly means the author specifies entries using the 
+%   \bibitem macro and typesets them manually, or
+% - using BiBTeX, which means entries are contained in a separate file
+%   (which is essentially a databased) then inported; this is the 
+%   approach used below, with the databased being dissertation.bib.
+%
+% Either way, the each entry has a key (or identifier) which can be used
+% in the main matter to cite it, e.g., \cite{X}, \cite[Chapter 2}{Y}.
+
+\backmatter
+
+\bibliography{dissertation}
+
+% -----------------------------------------------------------------------------
+
+% The dissertation concludes with a set of (optional) appendicies; these are 
+% the same as chapters in a sense, but once signaled as being appendicies via
+% the associated macro, LaTeX manages them appropriatly.
+
+\appendix
+
+\chapter{An Example Appendix}
+\label{appx:example}
+
+Content which is not central to, but may enhance the dissertation can be 
+included in one or more appendices; examples include, but are not limited
+to
+
+\begin{itemize}
+\item lengthy mathematical proofs, numerical or graphical results which 
+      are summarised in the main body,
+\item sample or example calculations, 
+      and
+\item results of user studies or questionnaires.
+\end{itemize}
+
+\noindent
+Note that in line with most research conferences, the marking panel is not
+obliged to read such appendices.
+
+% =============================================================================
+
+\end{document}

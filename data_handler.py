@@ -5,6 +5,14 @@ import pickle
 # from progress.bar import IncrementalBar as Bar
 from keras.utils import Sequence
 
+
+def normalize_data2(x, max=0, min=0, train=True):
+    if train:
+        max = np.max(x)
+        min = np.min(x)
+    
+    normalized = (2*(x-min/(max-min)) - 1)
+    return normalized
 def normalize_data(x, max=0, min=0, train=True):
     if train:
         max = np.max(x)
@@ -16,38 +24,82 @@ def normalize_data(x, max=0, min=0, train=True):
 
 class DataGenerator(Sequence):
     def __init__(self, dataset_path, batch_size, n_features):
-        self.dataset = pickle.load(open(dataset_path, 'rb'))
-        self.dataset = [s for sublist in self.dataset for s in sublist]
+        self.no_items = 0
+        self.files = 0
+        self.dataset_path = dataset_path
+        with open(self.dataset_path, 'rb') as f:
+            while 1:
+                try:
+                    # print(np.array(pickle.load(f)).astype(float))
+                    # sys.exit(1)
+                    # print(len(pickle.load(f)))
+                    self.no_items += len(pickle.load(f))
+                except EOFError:
+                    break  # no more data in the file
+        print(self.no_items)
+
+        # self.dataset = [float(s) for sublist in self.dataset for s in sublist]
         self.batch_size = batch_size
         self.n_features = n_features
-        self.dataset = np.reshape(np.array(self.dataset), (-1,self.n_features+1))
-        self.no_items = self.dataset.shape[0]
-        print(np.array(self.dataset).shape)
+        # self.dataset = np.reshape(np.array(self.dataset), (-1,self.n_features+1))
+       
+        # print(np.array(self.dataset).shape)
         self.train_max = np.empty((self.n_features+1))
         self.train_min = np.empty((self.n_features+1))
         
-        # normalizing data
-        # note: treating the test set the same way as the training sets
-        for c in range(self.n_features + 1):
-            # normalizing each feature using the only the training data to scale
-            self.train_max[c]= np.max(self.dataset[:,c])
-            self.train_min[c]= np.min(self.dataset[:,c])
-            self.dataset[:,c] = normalize_data(self.dataset[:,c], max=self.train_max[c], min=self.train_min[c], train=False)
+        # # normalizing data
+        # # note: treating the test set the same way as the training sets
+        # for c in range(self.n_features + 1):
+        #     # normalizing each feature using the only the training data to scale
+        #     self.train_max[c]= np.max(self.dataset[:,c])
+        #     self.train_min[c]= np.min(self.dataset[:,c])
+        #     self.dataset[:,c] = normalize_data(self.dataset[:,c], max=self.train_max[c], min=self.train_min[c], train=False)
         
        
     def __getitem__(self, index):  
         # Generate indexes of the batch
         indexes = [x for x in range(index*self.batch_size, (index+1)*self.batch_size)]
+       
         x = np.empty((self.batch_size, 1, self.n_features))
         y = np.empty((self.batch_size, 1))
         
-        for i in range(len(indexes)):
-            item = self.dataset[indexes[i]]
-            x[i, ] = np.reshape(item[:self.n_features], (1,-1))
-            y[i, ] = np.reshape(item[self.n_features], (1, 1))
+        # for i in range(len(indexes)):
+        #     item = self.dataset[indexes[i]()
+        #     x[i, ] = np.reshape(item[:self.n_features], (1,-1))
+        #     y[i, ] = np.reshape(item[self.n_features], (1, 1))
         
-        
-        return (x,y)
+        with open(self.dataset_path, 'rb') as f:
+            count = 0
+            number = 0
+            i = 0
+            while 1:
+                try:
+                    number = len(pickle.load(f)) + count
+                    if((number < indexes[0])):
+                        count = number
+                        break
+                    elif(len(pickle.load(f)) == 0 ):
+                        break
+
+                    file = np.array(pickle.load(f))
+                    for item in file:
+                        item = item.astype(np.float)
+                        if count in indexes:
+                            x[i, ] = np.reshape(item[:self.n_features], (1,-1))
+                            y[i, ] = np.reshape(item[self.n_features], (1, 1))
+                            
+                            
+                        count += 1
+                        i += 1
+                        if(i > self.batch_size - 1): 
+                            i = 0
+                            # print(x)
+                            return(x,y)
+
+                except EOFError:
+                    break  # no more data in the file
+        # print(x.shape)
+            
 
 
     def __len__(self):
@@ -78,9 +130,7 @@ class DataGenerator(Sequence):
 #     with open(pkl_path, "wb") as fileobj:
 #         pickle.dump(file_list, fileobj)
 
-def normalize_data2(x):
-    normalized = (2*(x-np.min(x))/(np.max(x)-np.min(x))) - 1
-    return normalized
+
 def standardize_data(x):
     standardized = (x - np.mean(x)) / np.std(x)
     return standardized
@@ -181,6 +231,8 @@ def read_all_data(filename):
         data["BID"] = np.array([])
         data["ASK"] = np.array([])
         data["DT"] = np.array([])
+        data["TOT"] = np.array([])
+        data["ALP"] = np.array([])
         data["TAR"] = np.array([])
        
         for row in f_data:
@@ -364,7 +416,7 @@ def collect_time_series_results(file_no):
 
     trader_data = {}
     session_id = ""
-    filename = f"./BristolStockExchange/avg_balance{(file_no):04d}.csv"
+    filename = f"./Balanced/avg_balance{(file_no):04d}.csv"
     
     with open(filename, "r") as f:
         f_data = list(csv.reader(f))
@@ -397,20 +449,27 @@ def collect_time_series_results(file_no):
 
 def get_end_results(file_no):
 
-    with open(f"./BristolStockExchange/avg_balance{(file_no):04d}.csv", 'r') as f:
+    with open(f"./Balanced/avg_balance{(file_no):04d}.csv", 'r') as f:
         lines = list(csv.reader(f))
-        last_line = lines[-1]
+        
+        no_trades = len(lines)
+        # print (len(lines))
+        try:
+            last_line = lines[-1]
+        except:
+            print(file_no)
         # print(last_line)
         trader_data = {}
     
     no_traders = int((len(last_line) - 5) / 4)
+    # print(no_traders)
     for i in range(no_traders):
-        trader = str(last_line[(i*no_traders) + 2]).strip()
-        print(trader)
+        trader = str(last_line[(i*4) + 2]).strip()
+        # print(trader)
         trader_data[trader] = {}
         # trader_data[trader]["Balance"] =  float(str(last_line[(i*no_traders + 3)]).strip())
         # trader_data[trader]["n"] = int(str(last_line[(i*no_traders) + 4]).strip())
-        trader_data[trader]["PPT"] = float(str(last_line[(i*no_traders + 5)]).strip())
+        trader_data[trader] = float(str(last_line[(i*4 + 5)]).strip())
 
     return trader_data
 

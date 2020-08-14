@@ -36,8 +36,9 @@ class NeuralNetwork():
         path = "./Models/" + self.filename + "/"
         file = path + self.filename
         try: 
-            os.mkdir(path)
+            os.system("mkdir " + path)
         except:
+            print("hey")
             pass
 
         # serialize model to JSON

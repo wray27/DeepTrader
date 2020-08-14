@@ -139,7 +139,10 @@ class Multivariate_LSTM(NeuralNetwork):
         # self.min_vals = np.array([])
 
         # architecture
-        self.model.add(LSTM(50, activation='relu', input_shape=(input_shape[1], input_shape[2])))
+        self.model.add(LSTM(10, activation='relu',  input_shape=(input_shape[1], input_shape[2])))
+        self.model.add(Dense(5, activation='relu'))
+        self.model.add(Dense(3, activation='relu'))
+        # self.model.add(Dense(3))
         # self.model.add(Dropout(0.5))
         self.model.add(Dense(1))
 
@@ -149,13 +152,23 @@ class Multivariate_LSTM(NeuralNetwork):
         
         
     def create_model(self):
-        pkl_path = "./Train_Dataset2.pkl"
+        pkl_path = "./normalized_data.pkl"
         train_data = data_handler.DataGenerator(
             pkl_path, self.batch_size, self.n_features)
         self.max_vals = train_data.train_max
         self.min_vals = train_data.train_min
-        self.model.fit_generator(train_data, epochs=20, verbose=1, workers=16)
+        self.model.fit_generator(
+            train_data, epochs=20, verbose=1, workers=16)
         self.save()
+        tf.keras.utils.plot_model(
+            self.model,
+            to_file="model.png",
+            show_shapes=False,
+            show_layer_names=True,
+            rankdir="TB",
+            expand_nested=False,
+            dpi=96,
+        )
 
 
 if __name__ == '__main__':
@@ -174,10 +187,10 @@ if __name__ == '__main__':
     # mul.run_all()
 
     # multivariate LSTM
-    batch_size = 256
-    no_features = 12
+    batch_size = 16384
+    no_features = 13
     no_steps = 1
-    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_5_1")
+    mv = Multivariate_LSTM( (batch_size, no_steps, no_features), f"DeepTrader1_6")
     mv.create_model()
 
 
