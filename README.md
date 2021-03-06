@@ -1,4 +1,4 @@
-# DeepTrader![DeepTrader](https://github.com/wray27/DeepTrader/Poster/DeepTrader_logo.png")
+# DeepTrader <img src="https://github.com/wray27/DeepTrader/raw/master/Poster/DeepTrader_logo.png" width="80" height="80"/>
 ------------
 The work from this project lead to the following research paper: [automated Creation of a High-Performing Algorithmic Trader via Deep Learning on Level-2 Limit Order Book Data](https://arxiv.org/abs/2012.00821). 
 
