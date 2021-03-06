@@ -1,0 +1,3 @@
+[submodule "BristolStockExchange"]
+	path = BristolStockExchange
+	url = https://github.com/wray27/BristolStockExchange

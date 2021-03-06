@@ -1,8 +1,19 @@
-/BristolStockExchange
 /Lectures
 /coms0010_docker_basic
 /BSE Explained.mp4
 /.DS_STORE
-/Papers
 *.csv
 /__pycache__
+/Data/.DS_Store
+/Models/.DS_Store
+*.pyc
+*.pkl
+/submission.zip
+Submission.zip
+eval.py
+Papers
+Papers 2
+Diss Papers
+Results
+BSE_Data
+Data
